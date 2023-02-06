@@ -8,6 +8,7 @@
     import { tick } from "svelte";
 	export let params: CommonComponentParameters;
 	export let schema: any;
+	export let root: any;
 	export let value: any[];
 
 	interface SortSpec {
@@ -188,6 +189,7 @@
 						}}
 						value={selectedValue}
 						bind:schema={schema.items}
+						{root}
 					/>
 				</div>
 			{/if}
