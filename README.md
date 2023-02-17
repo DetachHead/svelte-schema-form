@@ -8,14 +8,14 @@ JSON Schema is a powerful validation/type definition language for JSON data. See
 
 Install with npm
 
-	npm install @restspace/svelte-schema-form
+	npm install @detachhead/svelte-schema-form
 
 Use in a component
 
 	<script>
-	  import { SubmitForm } from '@restspace/svelte-schema-form';
-	  import '@restspace/svelte-schema-form/css/layout.scss';
-	  import '@restspace/svelte-schema-form/css/basic-skin.scss';
+	  import { SubmitForm } from '@detachhead/svelte-schema-form';
+	  import '@detachhead/svelte-schema-form/css/layout.scss';
+	  import '@detachhead/svelte-schema-form/css/basic-skin.scss';
 
 	  let schema = {
 		  type: "object",
@@ -65,7 +65,7 @@ The `SubmitForm` component manages validation of the entered data using the full
 ### SchemaForm
 A group of based on a schema, no submit functionality
 
-    import {SchemaForm} from "@restspace/svelte-schema-form";
+    import {SchemaForm} from "@detachhead/svelte-schema-form";
 
 	<SchemaForm
 	  schema // REQUIRED: JSON schema as an object
@@ -81,7 +81,7 @@ A group of based on a schema, no submit functionality
 ### SubmitForm
 An HTML form with a submit button and a submit flow
 
-    import {SubmitForm} from "@restspace/svelte-schema-form";
+    import {SubmitForm} from "@detachhead/svelte-schema-form";
 
 	<SubmitForm
 	  schema // REQUIRED: JSON schema as an object
