@@ -34,8 +34,7 @@
 	export let components: Record<string, new (...args: any[]) => any> = {};
 	export let componentContext: Record<string, unknown> = {};
 
-	let resolvedSchema: any = resolveRefs(schema, schema)
-
+	$: resolvedSchema = resolveRefs(schema, schema) as any
 	const dispatch = createEventDispatcher();
 
 	let validationErrors = {} as ValidationErrors;
