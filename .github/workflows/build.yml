@@ -1,9 +1,8 @@
 name: "Build package"
 
 on:
-  push:
-    branches:
-      - dev
+  - push
+
 jobs:
   build:
     runs-on: ubuntu-latest
