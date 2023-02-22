@@ -6,7 +6,6 @@
     import { stringToHtml } from "../utilities.js";
 	export let params: CommonComponentParameters;
 	export let schema: any;
-	export let root: any;
 	export let value: any;
 
 	let propnames: string[];
@@ -51,7 +50,6 @@
 		}}
 		value={value?.[propName]}
 		bind:schema={schema.properties[propName]}
-		{root}
 	/>
 	{/each}
 	{/if}
