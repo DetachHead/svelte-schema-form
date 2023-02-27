@@ -1,0 +1,6 @@
+{
+    //seperate tsconfig required to prevent globally declared svelte types from being incorrectly made available in playwright code
+    "extends": "../tsconfig.json",
+    "include": ["./"],
+    "exclude": []
+}

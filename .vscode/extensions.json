@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "svelte.svelte-vscode",
+        "ms-playwright.playwright",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "mhutchie.git-graph",
+        "redhat.vscode-yaml"
+    ]
+}

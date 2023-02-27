@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/restspace/svelte-schema-form.git"
+		"url": "git+https://github.com/detachhead/svelte-schema-form.git"
 	},
 	"keywords": [
 		"svelte",
@@ -15,25 +15,42 @@
 		"json schema"
 	],
 	"bugs": {
-		"url": "https://github.com/restspace/svelte-schema-form/issues"
+		"url": "https://github.com/detachhead/svelte-schema-form/issues"
 	},
-	"homepage": "https://github.com/restspace/svelte-schema-form#readme",
+	"homepage": "https://github.com/detachhead/svelte-schema-form#readme",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && svelte-package && sass package/css:package/css",
+		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && sass package/css:package/css",
 		"prepublishOnly": "echo 'Did you mean to publish `./package/`, instead of `./`?' && exit 1",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"copyout": "xcopy /s /y src\\lib ..\\svelte-schema-form-script\\svelte-schema-form\\src\\lib"
+		"test": "tsc -p tests/tsconfig.json && playwright test",
+		"typecheck": "tsc && npm run typecheck:svelte",
+		"typecheck:svelte": "svelte-kit sync && svelte-check --fail-on-warnings --fail-on-hints --tsconfig ./src/tsconfig.json",
+		"check:watch": "npm run typecheck -- --watch",
+		"check": "npm run lint:check && npm run format:check && npm run typecheck && npm run test",
+		"lint:check": "eslint .",
+		"lint:fix": "npm run lint:check -- --fix",
+		"_format": "prettier --plugin-search-dir",
+		"format:check": "npm run _format -- --check .",
+		"format:fix": "npm run _format -- --write ."
 	},
 	"devDependencies": {
+		"@detachhead/eslint-config": "^0.0.23",
+		"@playwright/test": "1.30.0",
+		"@trivago/prettier-plugin-sort-imports": "^4.0.0",
+		"@types/eslint": "^8.4.6",
 		"@rollup/plugin-inject": "^5.0.3",
 		"@sveltejs/adapter-auto": "^1.0.0",
 		"@sveltejs/kit": "^1.0.0",
 		"@sveltejs/package": "^1.0.0",
 		"@types/lodash-es": "^4.17.6",
+		"@typescript-eslint/eslint-plugin": "^5.27.0",
+		"@typescript-eslint/parser": "^5.27.0",
+		"eslint-plugin-svelte": "^2.14.1",
 		"node-stdlib-browser": "^1.2.0",
+		"prettier": "^2.8.4",
+		"prettier-plugin-svelte": "^2.7.0",
 		"sass": "^1.57.1",
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
