@@ -1,6 +1,5 @@
 import { jsonPointerToPath } from './types/schema'
 import { afterLast } from './utilities.js'
-import { get } from '@exodus/schemasafe/src/pointer'
 
 export function errorMapper(
     schema: any,
