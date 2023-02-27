@@ -6,16 +6,16 @@ const config = {
     compilerOptions: {
         enableSourcemap: true,
     },
-	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
-	// for more information about preprocessors
-	preprocess: preprocess({
+    // Consult https://kit.svelte.dev/docs/integrations#preprocessors
+    // for more information about preprocessors
+    preprocess: preprocess({
         sourceMap: true,
         typescript: { tsconfigDirectory: './src' },
     }),
 
-	kit: {
-		adapter: adapter(),
-	}
+    kit: {
+        adapter: adapter(),
+    },
 }
 
 export default config

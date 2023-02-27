@@ -1,20 +1,26 @@
 <script lang="ts">
-  import type { CommonComponentParameters } from './types/CommonComponentParameters'
-  import { editorForSchema } from './types/schema'
-  import { resolveRefs } from 'json-refs'
-  export let params: CommonComponentParameters
-  export let schema: any
-  export let value: any
+    import type { CommonComponentParameters } from './types/CommonComponentParameters'
+    import { editorForSchema } from './types/schema'
+    import { resolveRefs } from 'json-refs'
 
-  const { components } = params
+    export let params: CommonComponentParameters
+    export let schema: any
+    export let value: any
 
-  let typeComponent: any
+    const { components } = params
 
-  const getComponent = (resolvedSchema: any) => components[editorForSchema(resolvedSchema)]
+    let typeComponent: any
+
+    const getComponent = (resolvedSchema: any) => components[editorForSchema(resolvedSchema)]
 </script>
 
 {#await resolveRefs(schema)}
-  <p>loading...</p>
+    <p>loading...</p>
 {:then result}
-  <svelte:component this={getComponent(result.resolved)} {params} {value} schema={result.resolved} />
+    <svelte:component
+        this={getComponent(result.resolved)}
+        {params}
+        {value}
+        schema={result.resolved}
+    />
 {/await}

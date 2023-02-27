@@ -43,7 +43,7 @@ export function camelToTitle(camel: string): string {
  * manipulate the schema to allow any optional property to have a null value
  * which is appropriate for form input
  */
- export function nullOptionalsAllowed(schema: object): object {
+export function nullOptionalsAllowed(schema: object): object {
     if (schema === null || schema === undefined) schema = {}
     const newSchema = deepCopy(schema)
     nullOptionalsAllowedApply(newSchema as Record<string, unknown>)
@@ -65,8 +65,11 @@ function nullOptionalsAllowedApply(schema: Record<string, unknown>) {
         case 'array':
             const items = (schema['items'] || {}) as Record<string, unknown>
             nullOptionalsAllowedApply(items)
-            if (items['oneOf'] && !(items['oneOf'] as any[]).some(subschema => subschema['type'] == 'null')) {
-                (items['oneOf'] as any[]).push({ type: 'null' })
+            if (
+                items['oneOf'] &&
+                !(items['oneOf'] as any[]).some((subschema) => subschema['type'] == 'null')
+            ) {
+                ;(items['oneOf'] as any[]).push({ type: 'null' })
             }
             break
         default:
@@ -154,7 +157,9 @@ export function slashTrimLeft(s: string): string {
 }
 
 export function pathToArray(path: string) {
-    return slashTrim(path).split('/').filter(s => !!s)
+    return slashTrim(path)
+        .split('/')
+        .filter((s) => !!s)
 }
 
 export function getExtension(s: string): string {
@@ -174,11 +179,14 @@ export function getTailLines(s: string): string {
 }
 
 export function pathCombine(...args: string[]): string {
-    const stripped = args.filter(a => !!a)
+    const stripped = args.filter((a) => !!a)
     if (stripped.length === 0) return ''
     const startSlash = stripped[0].startsWith('/')
     const endSlash = stripped[stripped.length - 1].endsWith('/')
-    let joined = stripped.map(a => slashTrim(a)).filter(a => !!a).join('/')
+    let joined = stripped
+        .map((a) => slashTrim(a))
+        .filter((a) => !!a)
+        .join('/')
     if (startSlash) joined = '/' + joined
     if (endSlash && joined !== '/') joined += '/'
     return joined

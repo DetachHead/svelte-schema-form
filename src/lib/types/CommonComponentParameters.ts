@@ -1,36 +1,36 @@
-export type ValidationErrors = Record<string, string>;
+export type ValidationErrors = Record<string, string>
 
 export const FileNone = Symbol()
 export const ProgressContext = Symbol()
 
 export interface CommonComponentParameters {
-	path: string[];
-	pathChanged: (path: string[], val: any, op?: string) => boolean,
-	components: Record<string, new (...args: any[]) => any>,
-	componentContext?: Record<string, unknown>,
-	value: any,
-	validationErrors: ValidationErrors,
-	required?: boolean,
-	containerParent: 'none' | 'array' | 'object',
-	containerReadOnly: boolean,
-	showErrors: boolean,
-	collapsible: boolean,
-	idx: number
+    path: string[]
+    pathChanged: (path: string[], val: any, op?: string) => boolean
+    components: Record<string, new (...args: any[]) => any>
+    componentContext?: Record<string, unknown>
+    value: any
+    validationErrors: ValidationErrors
+    required?: boolean
+    containerParent: 'none' | 'array' | 'object'
+    containerReadOnly: boolean
+    showErrors: boolean
+    collapsible: boolean
+    idx: number
 }
 
 export interface SchemaFormEvent {
-	path: string[],
-	value: any,
-	errors: ValidationErrors,
-	pathValue?: any,
-	op?: string
+    path: string[]
+    value: any
+    errors: ValidationErrors
+    pathValue?: any
+    op?: string
 }
 
 export const childComponentParameters = (params: CommonComponentParameters, propName: string) => {
-	return {
-		...params,
-		path: [ ...params.path, propName ]
-	}
+    return {
+        ...params,
+        path: [...params.path, propName],
+    }
 }
 
 /*

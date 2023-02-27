@@ -1,307 +1,310 @@
 :root {
-	--input-padding: 3px;
-	--input-border: 1px solid #aaa;
+    --input-padding: 3px;
+    --input-border: 1px solid #aaa;
 }
 
 form.svelte-schema-form {
-	font-family: 'Montserrat', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 
-	input {
-		font-family: 'Montserrat', sans-serif;
-	}
+    input {
+        font-family: 'Montserrat', sans-serif;
+    }
 
-	.collapser {
-		background-size: 2rem 2rem;
-		background-position: 50% 35%;
-		display: inline-block;
-		width: 1rem;
-		height: 1rem;
-		background-image: url(../img/right.svg);
-	}
-	.collapser.open {
-		background-image: url(../img/down.svg);
-	}
+    .collapser {
+        background-size: 2rem 2rem;
+        background-position: 50% 35%;
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        background-image: url(../img/right.svg);
+    }
+    .collapser.open {
+        background-image: url(../img/down.svg);
+    }
 
-	.list-control {
-		background-size: contain;
-		background-repeat: no-repeat;
-		width: 1.1em;
-		height: 1.1em;
-		border: none;
-		cursor: pointer;
-	}
-	.add {
-		background-image: url(../img/add.svg);
-		width: 1.7em;
-		height: 1.7em;
-	}
-	.delete {
-		background-image: url(../img/delete.svg);
-	}
-	.up {
-		background-image: url(../img/up.svg);
-	}
-	.down {
-		background-image: url(../img/down.svg);
-	}
-	.duplicate {
-		background-image: url(../img/duplicate.svg);
-	}
-	.info {
-		background-size: contain;
-		background-repeat: no-repeat;
-		width: 0.6em;
-		height: 0.6em;
-		display: inline-block;
-		background-image: url(../img/info.svg);
-		background-size: 90% 90%;
-		cursor: pointer;
-	}
+    .list-control {
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 1.1em;
+        height: 1.1em;
+        border: none;
+        cursor: pointer;
+    }
+    .add {
+        background-image: url(../img/add.svg);
+        width: 1.7em;
+        height: 1.7em;
+    }
+    .delete {
+        background-image: url(../img/delete.svg);
+    }
+    .up {
+        background-image: url(../img/up.svg);
+    }
+    .down {
+        background-image: url(../img/down.svg);
+    }
+    .duplicate {
+        background-image: url(../img/duplicate.svg);
+    }
+    .info {
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 0.6em;
+        height: 0.6em;
+        display: inline-block;
+        background-image: url(../img/info.svg);
+        background-size: 90% 90%;
+        cursor: pointer;
+    }
 
-	
-	label, .subset-label {
-		color: #777;
-	}
-	.subset-label {
-		font-weight: bold;
+    label,
+    .subset-label {
+        color: #777;
+    }
+    .subset-label {
+        font-weight: bold;
 
-		.subset-label-description {
-			font-size: 0.8em;
-		}
-	}
+        .subset-label-description {
+            font-size: 0.8em;
+        }
+    }
 
-	.depth-0 > .subset-label {
-		font-size: 1.5em;
-		text-decoration: underline;
-	}
+    .depth-0 > .subset-label {
+        font-size: 1.5em;
+        text-decoration: underline;
+    }
 
-	input, select, .input {
-		border: var(--input-border);
-		border-radius: 2px;
-		padding: var(--input-padding);
-		color: #777;
-	}
+    input,
+    select,
+    .input {
+        border: var(--input-border);
+        border-radius: 2px;
+        padding: var(--input-padding);
+        color: #777;
+    }
 
-	button {
-		background-color: transparent;
-	}
+    button {
+        background-color: transparent;
+    }
 
-	.error {
-		position: relative;
-		top: -0.5em;
-		color: red;
-	}
+    .error {
+        position: relative;
+        top: -0.5em;
+        color: red;
+    }
 
-	.button-container {
-		display: flex;
-		justify-content: center;
-		margin-top: 2em;
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 2em;
 
-		.submit-button {
-			border: 1px solid #ccc;
-			padding: 4px 8px;
-			cursor: pointer;
-			color: #aaa;
-		}
-		button:hover {
-			background-color: #f8f4f4;
-		}
+        .submit-button {
+            border: 1px solid #ccc;
+            padding: 4px 8px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        button:hover {
+            background-color: #f8f4f4;
+        }
 
-		button {
-			border: 2px solid #aaa;
-			color: #777;
-		}
-	}
+        button {
+            border: 2px solid #aaa;
+            color: #777;
+        }
+    }
 
-	&.dirty .submit-button {
-		border: 2px solid #aaa;
-		color: #777;
-	}
+    &.dirty .submit-button {
+        border: 2px solid #aaa;
+        color: #777;
+    }
 
-	.sf-drop-area {
-		height: 4em;
-		border: var(--input-border);
-		padding-right: 16px;
-		position: relative;
-		box-sizing: border-box;
+    .sf-drop-area {
+        height: 4em;
+        border: var(--input-border);
+        padding-right: 16px;
+        position: relative;
+        box-sizing: border-box;
 
-		&.highlight {
-			background-color: #eee;
-		}
+        &.highlight {
+            background-color: #eee;
+        }
 
-		.sf-upload-caption {
-			font-weight: bold;
-			font-size: 1.1em;
-			color: #ccc;
-		}
+        .sf-upload-caption {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #ccc;
+        }
 
-		.sf-upload-controls {
-			.sf-upload-deleter {
-				background-image: url(../img/delete.svg);
-				background-repeat: no-repeat;
-				background-size: contain;
-			}
+        .sf-upload-controls {
+            .sf-upload-deleter {
+                background-image: url(../img/delete.svg);
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
 
-			.sf-upload-to-uploader {
-				background-image: url(../img/upload.svg);
-				background-repeat: no-repeat;
-				background-size: contain;
-			}
-			.sf-upload-to-link {
-				background-image: url(../img/link.svg);
-				background-repeat: no-repeat;
-				background-size: contain;
-			}
-		}
-	}
+            .sf-upload-to-uploader {
+                background-image: url(../img/upload.svg);
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+            .sf-upload-to-link {
+                background-image: url(../img/link.svg);
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+        }
+    }
 
-	.sf-progress-bars .sf-progress-bar {
-		border: var(--input-border);
-		padding: var(--input-padding);
-		font-size: 1em;
+    .sf-progress-bars .sf-progress-bar {
+        border: var(--input-border);
+        padding: var(--input-padding);
+        font-size: 1em;
 
-		.sf-progress-done {
-			background-color: #80808050;
-		}
-	}
+        .sf-progress-done {
+            background-color: #80808050;
+        }
+    }
 
-	.sf-autocomplete {
-		.sf-items {
-			background-color: #f8f8f8;
-		}
+    .sf-autocomplete {
+        .sf-items {
+            background-color: #f8f8f8;
+        }
 
-		.sf-items, .sf-selected-item {
-			img {
-				max-height: 3em;
-				max-width: 5em;
-				margin-right: 1em;
-			}
-		}
+        .sf-items,
+        .sf-selected-item {
+            img {
+                max-height: 3em;
+                max-width: 5em;
+                margin-right: 1em;
+            }
+        }
 
-		.sf-items > div {
-			border: var(--input-border);
-			border-top: none;
-			font-size: .8em;
-			padding: 6px;
-		}
+        .sf-items > div {
+            border: var(--input-border);
+            border-top: none;
+            font-size: 0.8em;
+            padding: 6px;
+        }
 
-		.sf-selected-item {
-			min-height: 22px;
-			padding: 0;
-			padding-left: var(--input-padding);
-			font-size: .8em;
+        .sf-selected-item {
+            min-height: 22px;
+            padding: 0;
+            padding-left: var(--input-padding);
+            font-size: 0.8em;
 
-			input {
-				border: none;
-				padding: var(--input-padding);
-				margin: 0;
-				margin-left: -3px;
-				width: 100%;
-			}
-		}
-	}
+            input {
+                border: none;
+                padding: var(--input-padding);
+                margin: 0;
+                margin-left: -3px;
+                width: 100%;
+            }
+        }
+    }
 
-	.list-detail {
-		margin: 1em 0;
-  
-		.array-label {
-			border: none;
-		}
-		
-		.table-container {
-			padding: 1em;
-			border: 1px solid black;
-		}
-		
-		.heading {
-			text-align: center;
-			font-weight: bold;
-		}
-		.heading,
-		.heading + .buttons-header {
-			border-bottom: 1px solid #777;
-		}
-		.heading.asc:after,
-		.heading.desc:after {
-			content: " ";
-			display: inline-block;
-			height: 14px;
-			width: 14px;
-		}
-		.heading.asc:after {
-			background-image: url(../img/down.svg);
-		}
-		.heading.desc:after {
-			background-image: url(../img/up.svg);
-		}
-		
-		.row-wrapper {
-			display: contents;
-		}
-		
-		.item {
-			align-items: center;
-			justify-content:center;
-		}
-		.item,
-		.row-wrapper + .array-buttons {
-			border-bottom: 1px solid #ccc;
-		}
-		.row-wrapper:hover div,
-		.row-wrapper:hover + .sf-array-buttons {
-			background-color: #f8f8f8;
-		}
-		
-		.row-wrapper.selected div,
-		.row-wrapper.selected + .sf-array-buttons {
-			background-color: #eef;
-		}
-		.table-container > .element {
-			padding: 5px 13px;
-		}
-		
-		.control-button {
-			width: 18px;
-			height: 18px;
-			margin-top: 0;
-		}
-		
-		.row-buttons {
-			padding: 5px 0 1px 0;
-		}
-		
-		.add-button-container {
-			justify-self: center;
-			padding-top: 10px;
-		}
-		
-		.add-button {
-			width: 30px;
-			height: 30px;
-		}
+    .list-detail {
+        margin: 1em 0;
 
-		.element > .subset {
-			border-left :none;
-		}
+        .array-label {
+            border: none;
+        }
 
-		.to-list {
-			border: none;
-			position: relative;
-			left: 10px;
-			cursor: pointer;
-			top: -7px;
+        .table-container {
+            padding: 1em;
+            border: 1px solid black;
+        }
 
-			&:before {
-				content: " ";
-				background-image: url(../img/left-arrow.svg);
-				height: 20px;
-				width: 20px;
-				background-size: contain;
-				display: block;
-				position: absolute;
-				left: -19px;
-				top: -2px;
-			}
-		}
-	}
+        .heading {
+            text-align: center;
+            font-weight: bold;
+        }
+        .heading,
+        .heading + .buttons-header {
+            border-bottom: 1px solid #777;
+        }
+        .heading.asc:after,
+        .heading.desc:after {
+            content: ' ';
+            display: inline-block;
+            height: 14px;
+            width: 14px;
+        }
+        .heading.asc:after {
+            background-image: url(../img/down.svg);
+        }
+        .heading.desc:after {
+            background-image: url(../img/up.svg);
+        }
+
+        .row-wrapper {
+            display: contents;
+        }
+
+        .item {
+            align-items: center;
+            justify-content: center;
+        }
+        .item,
+        .row-wrapper + .array-buttons {
+            border-bottom: 1px solid #ccc;
+        }
+        .row-wrapper:hover div,
+        .row-wrapper:hover + .sf-array-buttons {
+            background-color: #f8f8f8;
+        }
+
+        .row-wrapper.selected div,
+        .row-wrapper.selected + .sf-array-buttons {
+            background-color: #eef;
+        }
+        .table-container > .element {
+            padding: 5px 13px;
+        }
+
+        .control-button {
+            width: 18px;
+            height: 18px;
+            margin-top: 0;
+        }
+
+        .row-buttons {
+            padding: 5px 0 1px 0;
+        }
+
+        .add-button-container {
+            justify-self: center;
+            padding-top: 10px;
+        }
+
+        .add-button {
+            width: 30px;
+            height: 30px;
+        }
+
+        .element > .subset {
+            border-left: none;
+        }
+
+        .to-list {
+            border: none;
+            position: relative;
+            left: 10px;
+            cursor: pointer;
+            top: -7px;
+
+            &:before {
+                content: ' ';
+                background-image: url(../img/left-arrow.svg);
+                height: 20px;
+                width: 20px;
+                background-size: contain;
+                display: block;
+                position: absolute;
+                left: -19px;
+                top: -2px;
+            }
+        }
+    }
 }

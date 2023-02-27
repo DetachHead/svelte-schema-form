@@ -1,15 +1,11 @@
 import { camelToTitle } from '../utilities.js'
 
 export function editorForSchema(schema: any): string {
-	let type = schema['type']
-    if (schema['enum'])
-        type = 'enum'
-    if (schema['format'])
-        type += '-' + schema['format']
-    if (schema['hidden'])
-        type = 'hidden'
-    if (schema['editor'])
-        type = schema['editor']
+    let type = schema['type']
+    if (schema['enum']) type = 'enum'
+    if (schema['format']) type += '-' + schema['format']
+    if (schema['hidden']) type = 'hidden'
+    if (schema['editor']) type = schema['editor']
     switch (type) {
         case 'string-date-time':
         case 'string-date':
@@ -25,9 +21,12 @@ export function editorForSchema(schema: any): string {
 
 export function emptyValue(schema: any): any {
     switch (schema['type'] || '') {
-        case 'object': return {}
-        case 'array': return []
-        default: return null
+        case 'object':
+            return {}
+        case 'array':
+            return []
+        default:
+            return null
     }
 }
 
@@ -45,7 +44,7 @@ export function jsonPointerToPath(pointer: string) {
     }
 
     const pathEls = [] as string[]
-    pointer.split('/').forEach(el => {
+    pointer.split('/').forEach((el) => {
         const int = parseInt(el)
         if (isNaN(int)) {
             pathEls.push(`.${el}`)
