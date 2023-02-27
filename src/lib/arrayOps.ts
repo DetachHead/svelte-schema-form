@@ -1,12 +1,12 @@
-import type { CommonComponentParameters } from "./types/CommonComponentParameters";
-import { emptyValue } from "./types/schema";
+import type { CommonComponentParameters } from './types/CommonComponentParameters'
+import { emptyValue } from './types/schema'
 
 export const arrayAdd = (schema: any, params: CommonComponentParameters, value: any[]) => () => {
 	params.pathChanged(params.path,
 	[
 		...(value || []),
 		emptyValue(schema.items)
-	]);
+	])
 }
 
 export const arrayDelete = (idx: number, params: CommonComponentParameters, value: any[]) => () => {
@@ -14,8 +14,8 @@ export const arrayDelete = (idx: number, params: CommonComponentParameters, valu
 	[
 		...value.slice(0, idx),
 		...value.slice(idx + 1)
-	], "delete");
-};
+	], 'delete')
+}
 
 export const arrayDuplicate = (idx: number, params: CommonComponentParameters, value: any[]) => () => {
 	params.pathChanged(params.path,
@@ -24,8 +24,8 @@ export const arrayDuplicate = (idx: number, params: CommonComponentParameters, v
 		value[idx],
 		JSON.parse(JSON.stringify(value[idx])),
 		...value.slice(idx + 1)
-	], "duplicate");
-};
+	], 'duplicate')
+}
 
 export const arrayUp = (idx: number, params: CommonComponentParameters, value: any[]) => () => {
 	if (idx > 0) {
@@ -35,9 +35,9 @@ export const arrayUp = (idx: number, params: CommonComponentParameters, value: a
 			value[idx],
 			value[idx-1],
 			...value.slice(idx + 1)
-		], "up");
+		], 'up')
 	}
-};
+}
 
 export const arrayDown = (idx: number, params: CommonComponentParameters, value: any[]) => () => {
 	if (idx < value.length - 1) {
@@ -47,6 +47,6 @@ export const arrayDown = (idx: number, params: CommonComponentParameters, value:
 			value[idx+1],
 			value[idx],
 			...value.slice(idx + 2)
-		], "down");
+		], 'down')
 	}
-};
+}

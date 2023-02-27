@@ -1,18 +1,18 @@
 <script lang="ts">
-    import { editorForSchema } from "../types/schema";
-	import type { CommonComponentParameters } from "../types/CommonComponentParameters";
-	export let params: CommonComponentParameters;
-	export let schema: any;
-	export let value: any;
+    import { editorForSchema } from '../types/schema'
+	import type { CommonComponentParameters } from '../types/CommonComponentParameters'
+	export let params: CommonComponentParameters
+	export let schema: any
+	export let value: any
 
-	let type = "text";
+	let type = 'text'
 	$: {
-		const editor = editorForSchema(schema);
-		type = editor === "password" ? "password"
-			   : editor === "email" ? "email"
-			   : editor === "time" ? "time"
-			   : editor === "date-time" ? "datetime-local"
-			   : editor === "date" ? "date" : "text";
+		const editor = editorForSchema(schema)
+		type = editor === 'password' ? 'password'
+			   : editor === 'email' ? 'email'
+			   : editor === 'time' ? 'time'
+			   : editor === 'date-time' ? 'datetime-local'
+			   : editor === 'date' ? 'date' : 'text'
 	}
 </script>
 

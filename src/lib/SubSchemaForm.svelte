@@ -1,16 +1,16 @@
 <script lang="ts">
-  import type { CommonComponentParameters } from "./types/CommonComponentParameters";
-  import { editorForSchema } from "./types/schema";
-  import { resolveRefs } from "json-refs";
-  export let params: CommonComponentParameters;
-  export let schema: any;
-  export let value: any;
+  import type { CommonComponentParameters } from './types/CommonComponentParameters'
+  import { editorForSchema } from './types/schema'
+  import { resolveRefs } from 'json-refs'
+  export let params: CommonComponentParameters
+  export let schema: any
+  export let value: any
 
-  let { components } = params;
+  const { components } = params
 
-  let typeComponent: any;
+  let typeComponent: any
 
-  const getComponent = (resolvedSchema: any) => components[editorForSchema(resolvedSchema)];
+  const getComponent = (resolvedSchema: any) => components[editorForSchema(resolvedSchema)]
 </script>
 
 {#await resolveRefs(schema)}

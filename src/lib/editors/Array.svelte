@@ -1,24 +1,24 @@
 <script lang="ts">
-	import type { CommonComponentParameters } from "../types/CommonComponentParameters";
-	import { emptyValue, schemaLabel } from "../types/schema";
-	import SubSchemaForm from "../SubSchemaForm.svelte";
-    import { stringToHtml } from "../utilities.js";
-    import { arrayDelete, arrayAdd, arrayUp, arrayDown, arrayDuplicate } from "../arrayOps";
-	export let params: CommonComponentParameters;
-	export let schema: any;
-	export let value: any[];
+	import type { CommonComponentParameters } from '../types/CommonComponentParameters'
+	import { emptyValue, schemaLabel } from '../types/schema'
+	import SubSchemaForm from '../SubSchemaForm.svelte'
+    import { stringToHtml } from '../utilities.js'
+    import { arrayDelete, arrayAdd, arrayUp, arrayDown, arrayDuplicate } from '../arrayOps'
+	export let params: CommonComponentParameters
+	export let schema: any
+	export let value: any[]
 
-	let collapserOpenState: "open" | "closed" = params.path.length === 0 || !params.collapsible ? "open" : "closed";
+	let collapserOpenState: 'open' | 'closed' = params.path.length === 0 || !params.collapsible ? 'open' : 'closed'
 
 	const toggle = () => {
-		collapserOpenState = collapserOpenState === "open" ? "closed" : "open";
+		collapserOpenState = collapserOpenState === 'open' ? 'closed' : 'open'
 	}
 
-	$: legendText = schemaLabel(schema, params.path);
-	$: showWrapper = (value && value.length > 0) || schema.emptyDisplay !== false;
-	$: emptyText = (!value || value.length === 0) && typeof schema.emptyDisplay === 'string' && schema.emptyDisplay;
-	$: readOnly = params.containerReadOnly || schema.readOnly || false;
-	$: controls = schema.controls === undefined ? (readOnly ? '' : 'add, reorder, delete, duplicate') : schema.controls;
+	$: legendText = schemaLabel(schema, params.path)
+	$: showWrapper = (value && value.length > 0) || schema.emptyDisplay !== false
+	$: emptyText = (!value || value.length === 0) && typeof schema.emptyDisplay === 'string' && schema.emptyDisplay
+	$: readOnly = params.containerReadOnly || schema.readOnly || false
+	$: controls = schema.controls === undefined ? (readOnly ? '' : 'add, reorder, delete, duplicate') : schema.controls
 </script>
 
 {#if showWrapper}
@@ -35,14 +35,14 @@
 	</legend>
 	{/if}
 
-	{#if collapserOpenState === "open"}
+	{#if collapserOpenState === 'open'}
 		{#if !emptyText}
 			{#each value || [] as item, idx (idx)}
 			<svelte:component this={SubSchemaForm}
 				params={{
 					...params,
 					path: [ ...params.path, idx.toString() ],
-					containerParent: "array",
+					containerParent: 'array',
 					containerReadOnly: params.containerReadOnly || schema.readOnly || false
 				}}
 				value={item}

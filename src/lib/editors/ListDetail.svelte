@@ -1,128 +1,128 @@
 <script lang="ts">
-	import type { CommonComponentParameters } from "../types/CommonComponentParameters";
-	import { emptyValue, schemaLabel } from "../types/schema";
-	import SubSchemaForm from "../SubSchemaForm.svelte";
-    import { stringToHtml } from "../utilities.js";
-    import { arrayDelete, arrayAdd, arrayUp, arrayDown, arrayDuplicate } from "../arrayOps";
-    import { values } from "lodash-es";
-    import { tick } from "svelte";
-	export let params: CommonComponentParameters;
-	export let schema: any;
-	export let value: any[];
+	import type { CommonComponentParameters } from '../types/CommonComponentParameters'
+	import { emptyValue, schemaLabel } from '../types/schema'
+	import SubSchemaForm from '../SubSchemaForm.svelte'
+    import { stringToHtml } from '../utilities.js'
+    import { arrayDelete, arrayAdd, arrayUp, arrayDown, arrayDuplicate } from '../arrayOps'
+    import { values } from 'lodash-es'
+    import { tick } from 'svelte'
+	export let params: CommonComponentParameters
+	export let schema: any
+	export let value: any[]
 
 	interface SortSpec {
 		field: string;
-		direction: "asc" | "desc";
+		direction: 'asc' | 'desc';
 	}
 
-	$: value = value || [];
-	$: itemSchema = schema.items || {};
+	$: value = value || []
+	$: itemSchema = schema.items || {}
 	$: listProps = ((Array.isArray(itemSchema.headings) && typeof itemSchema.headings[0] === 'string' && itemSchema.headings)
-				    || Object.keys(itemSchema.properties)) as string[];
+				    || Object.keys(itemSchema.properties)) as string[]
 	$: listFields = listProps.map(prop =>
-        schemaLabel(itemSchema.properties[prop] as object, [...params.path, "0", prop]));
-	$: sort = itemSchema.defaultSort || null as SortSpec | null;
+        schemaLabel(itemSchema.properties[prop] as object, [...params.path, '0', prop]))
+	$: sort = itemSchema.defaultSort || null as SortSpec | null
 
-	let collapserOpenState: "open" | "closed" = params.path.length === 0 || !params.collapsible ? "open" : "closed";
-	let selectedIdx = -1;
-	let mode: "list" | "detail" = "list";
-	let rowView: any[] = [];
-	let toListButton: HTMLButtonElement | null;
-	let ignoreKeyUp = false;
-	let selectedValue: any = null;
+	let collapserOpenState: 'open' | 'closed' = params.path.length === 0 || !params.collapsible ? 'open' : 'closed'
+	let selectedIdx = -1
+	let mode: 'list' | 'detail' = 'list'
+	let rowView: any[] = []
+	let toListButton: HTMLButtonElement | null
+	let ignoreKeyUp = false
+	let selectedValue: any = null
 
-	//check schema
-	if (schema.type !== "array" || schema.items.type !== "object") {
-		throw new Error('ListDetail editor can only be used on an array with items of type=object');
+	// check schema
+	if (schema.type !== 'array' || schema.items.type !== 'object') {
+		throw new Error('ListDetail editor can only be used on an array with items of type=object')
 	}
 
 	const toggle = () => {
-		collapserOpenState = collapserOpenState === "open" ? "closed" : "open";
-	};
+		collapserOpenState = collapserOpenState === 'open' ? 'closed' : 'open'
+	}
 
 	const onSelect = (idx: number) => async () => {
-		mode = "detail";
-		selectedIdx = value.findIndex(v => v === rowView[idx]);
-		selectedValue = value[selectedIdx];
-		await tick();
-		toListButton?.focus();
-	};
+		mode = 'detail'
+		selectedIdx = value.findIndex(v => v === rowView[idx])
+		selectedValue = value[selectedIdx]
+		await tick()
+		toListButton?.focus()
+	}
 
 	const onSort = (fieldName: string) => () => {
-		if (sort?.field === fieldName && sort.direction === "desc") {
-			sort = null;
+		if (sort?.field === fieldName && sort.direction === 'desc') {
+			sort = null
 		} else {
 			sort = {
 				field: fieldName,
-				direction: sort?.field === fieldName ? "desc" : "asc"
-			};
+				direction: sort?.field === fieldName ? 'desc' : 'asc'
+			}
 		}
-	};
+	}
 	const onSortKey = (fieldName: string) => (ev: KeyboardEvent) => {
-		if (ev.key === "Enter") {
-			if (sort?.field === fieldName  && sort.direction === "desc") {
-				sort = null;
+		if (ev.key === 'Enter') {
+			if (sort?.field === fieldName  && sort.direction === 'desc') {
+				sort = null
 			} else {
 				sort = {
 					field: fieldName,
-					direction: sort?.field === fieldName ? "desc" : "asc"
-				};
+					direction: sort?.field === fieldName ? 'desc' : 'asc'
+				}
 			}
 		}
-	};
+	}
 
 	const onKey = async (ev: KeyboardEvent) => {
-		if (mode === "list" && !ignoreKeyUp) {
-			const targ = ev.target as HTMLDivElement;
-			console.log(`key ${ev.key} selectedIdx ${selectedIdx} len ${value.length}`);
-			if (ev.key === "ArrowDown" && selectedIdx + 1 < value.length) {
-				selectedIdx += 1;
-				await tick();
-			} else if (ev.key === "ArrowUp" && selectedIdx > 0) {
-				selectedIdx -= 1;
-			} else if (ev.key === "Enter") {
-				onSelect(selectedIdx)();
+		if (mode === 'list' && !ignoreKeyUp) {
+			const targ = ev.target as HTMLDivElement
+			console.log(`key ${ev.key} selectedIdx ${selectedIdx} len ${value.length}`)
+			if (ev.key === 'ArrowDown' && selectedIdx + 1 < value.length) {
+				selectedIdx += 1
+				await tick()
+			} else if (ev.key === 'ArrowUp' && selectedIdx > 0) {
+				selectedIdx -= 1
+			} else if (ev.key === 'Enter') {
+				onSelect(selectedIdx)()
 			}
 		}
-		ignoreKeyUp = false;
-	};
+		ignoreKeyUp = false
+	}
 
 	const onClick = (ev: MouseEvent) => {
-		if (mode === "list") {
-			(ev.currentTarget as HTMLElement).focus();
+		if (mode === 'list') {
+			(ev.currentTarget as HTMLElement).focus()
 		}
 	}
 
 	const onModeList = async () => {
-		mode = "list";
-		ignoreKeyUp = true;
-		await tick();
-		selectedIdx = rowView.findIndex(v => v === selectedValue);
+		mode = 'list'
+		ignoreKeyUp = true
+		await tick()
+		selectedIdx = rowView.findIndex(v => v === selectedValue)
 	}
 
 	const sortFunc = (sort: SortSpec) => (a: any, b: any) => {
-		if (a[sort.field] < b[sort.field]) return sort.direction === "asc" ? -1 : 1;
-		if (a[sort.field] > b[sort.field]) return sort.direction === "desc" ? -1 : 1;
-		return 0;
-	};
+		if (a[sort.field] < b[sort.field]) return sort.direction === 'asc' ? -1 : 1
+		if (a[sort.field] > b[sort.field]) return sort.direction === 'desc' ? -1 : 1
+		return 0
+	}
 
 	const headingClass = (idx: number, sort: SortSpec | null) => {
 		const sortClass = listProps[idx] !== sort?.field
-			? ""
-			: sort?.direction;
-		return "heading " + sortClass;
+			? ''
+			: sort?.direction
+		return 'heading ' + sortClass
 	}
 
-	$: legendText = schemaLabel(schema, params.path);
-	$: showWrapper = (value && value.length > 0) || schema.emptyDisplay !== false;
-	$: emptyText = (!value || value.length === 0) && typeof schema.emptyDisplay === 'string' && schema.emptyDisplay;
-	$: readOnly = params.containerReadOnly || schema.readOnly || false;
-	$: controls = schema.controls === undefined ? (readOnly ? '' : 'add, reorder, delete, duplicate') : schema.controls;
-	$: gridTemplateColumns = mode === "list" ? `repeat(${listFields.length}, auto) 50px` : null;
+	$: legendText = schemaLabel(schema, params.path)
+	$: showWrapper = (value && value.length > 0) || schema.emptyDisplay !== false
+	$: emptyText = (!value || value.length === 0) && typeof schema.emptyDisplay === 'string' && schema.emptyDisplay
+	$: readOnly = params.containerReadOnly || schema.readOnly || false
+	$: controls = schema.controls === undefined ? (readOnly ? '' : 'add, reorder, delete, duplicate') : schema.controls
+	$: gridTemplateColumns = mode === 'list' ? `repeat(${listFields.length}, auto) 50px` : null
 	$: {
-		rowView = [...value];
+		rowView = [...value]
 		if (sort) {
-			rowView.sort(sortFunc(sort));
+			rowView.sort(sortFunc(sort))
 		}
 	}
 </script>
@@ -141,10 +141,10 @@
 	</legend>
 	{/if}
 
-	{#if collapserOpenState === "open"}
+	{#if collapserOpenState === 'open'}
 		{#if !emptyText}
 			<div class="table-container" tabindex="0" style:grid-template-columns={gridTemplateColumns} on:keyup={onKey} on:click={onClick}>
-			{#if mode === "list"}
+			{#if mode === 'list'}
 				{#each listFields as fieldName, idx}
 					<div class={headingClass(idx, sort)} on:click|stopPropagation={onSort(listProps[idx])} on:keyup|stopPropagation={onSortKey(listProps[idx])} tabIndex="0">{fieldName}</div>
 				{/each}
@@ -183,7 +183,7 @@
 						params={{
 							...params,
 							path: [ ...params.path, selectedIdx.toString() ],
-							containerParent: "array",
+							containerParent: 'array',
 							containerReadOnly: params.containerReadOnly || schema.readOnly || false
 						}}
 						value={selectedValue}

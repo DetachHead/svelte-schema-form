@@ -1,7 +1,7 @@
 export type ValidationErrors = Record<string, string>;
 
-export const FileNone = Symbol();
-export const ProgressContext = Symbol();
+export const FileNone = Symbol()
+export const ProgressContext = Symbol()
 
 export interface CommonComponentParameters {
 	path: string[];
@@ -11,7 +11,7 @@ export interface CommonComponentParameters {
 	value: any,
 	validationErrors: ValidationErrors,
 	required?: boolean,
-	containerParent: "none" | "array" | "object",
+	containerParent: 'none' | 'array' | 'object',
 	containerReadOnly: boolean,
 	showErrors: boolean,
 	collapsible: boolean,
@@ -30,7 +30,7 @@ export const childComponentParameters = (params: CommonComponentParameters, prop
 	return {
 		...params,
 		path: [ ...params.path, propName ]
-	};
+	}
 }
 
 /*

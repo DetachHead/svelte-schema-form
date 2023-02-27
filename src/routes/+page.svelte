@@ -1,78 +1,78 @@
 <script lang="ts">
-	import SubmitForm from "$lib/SubmitForm.svelte";
-	import "svelte-schema-form/css/layout.scss";
-	import "svelte-schema-form/css/basic-skin.scss";
+	import SubmitForm from '$lib/SubmitForm.svelte'
+	import 'svelte-schema-form/css/layout.scss'
+	import 'svelte-schema-form/css/basic-skin.scss'
 
 	let schema: any = {
-		type: "object",
+		type: 'object',
 		properties: {
-			something: { type: "string", maxLength: 5, description: "description for something" },
-			amount: { type: "number" },
-			choose: { type: "string", enum: [ "a", "b", "c" ] },
-			checkThis: { type: "boolean" },
+			something: { type: 'string', maxLength: 5, description: 'description for something' },
+			amount: { type: 'number' },
+			choose: { type: 'string', enum: [ 'a', 'b', 'c' ] },
+			checkThis: { type: 'boolean' },
 			things: {
-				type: "array",
+				type: 'array',
 				items: {
-					type: "string"
+					type: 'string'
 				}
 			},
 			complicatedThings: {
-				type: "array",
-				editor: "blocks",
-				effectiveUrl: "/abc",
+				type: 'array',
+				editor: 'blocks',
+				effectiveUrl: '/abc',
 				items: {
-					type: "object",
+					type: 'object',
 					properties: {
-						name: { type: "string" },
-						thumbnail: { type: "string", editor: "upload" }
+						name: { type: 'string' },
+						thumbnail: { type: 'string', editor: 'upload' }
 					}
 				}
 			},
-			"obj": {
-				"type": "object",
-				"properties": {
-					"xyz": {
-						"type": "string"
+			'obj': {
+				'type': 'object',
+				'properties': {
+					'xyz': {
+						'type': 'string'
 					}
 				}
 			},
-			"aFile": {
-				"type": "string",
-				"editor": "upload"
+			'aFile': {
+				'type': 'string',
+				'editor': 'upload'
 			}
 		},
-		required: [ "amount" ],
-		pathPattern: "item_${amount}"
-	};
-	let storedSchema = undefined;
-	if (typeof window !== 'undefined') {
-		storedSchema = window.localStorage.getItem('schema');
-		if (storedSchema) schema = JSON.parse(storedSchema);
+		required: [ 'amount' ],
+		pathPattern: 'item_${amount}'
 	}
-	let jsonInvalid = false;
+	let storedSchema = undefined
+	if (typeof window !== 'undefined') {
+		storedSchema = window.localStorage.getItem('schema')
+		if (storedSchema) schema = JSON.parse(storedSchema)
+	}
+	let jsonInvalid = false
 
-	let value = { };
-	let valueJson = '';
-	let collapsible = false;
+	const value = { }
+	let valueJson = ''
+	let collapsible = false
 
 	const schemaUpdate = (ev: any) => {
-		const newSchema = ev.currentTarget.value;
+		const newSchema = ev.currentTarget.value
 		try {
-			schema = JSON.parse(newSchema);
-			jsonInvalid = false;
+			schema = JSON.parse(newSchema)
+			jsonInvalid = false
 			if (typeof window !== 'undefined') {
-				window.localStorage.setItem('schema', newSchema);
+				window.localStorage.setItem('schema', newSchema)
 			}
 		} catch {
-			jsonInvalid = true;
+			jsonInvalid = true
 		}
 	}
 
 	const submit = (e: CustomEvent) => {
-		valueJson = JSON.stringify(e.detail.value, undefined, 2).trim();
-	};
+		valueJson = JSON.stringify(e.detail.value, undefined, 2).trim()
+	}
 
-	const componentContext = { currencySymbol: '£' };
+	const componentContext = { currencySymbol: '£' }
 </script>
 
 <div class="container">
@@ -129,7 +129,7 @@
 	#collapsible {
 		margin-bottom: 6px;
 	}
-	
+
 	.control {
 		margin-bottom: 6px;
 	}

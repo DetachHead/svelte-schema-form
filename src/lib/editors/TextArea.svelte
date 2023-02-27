@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { CommonComponentParameters } from "../types/CommonComponentParameters";
-	export let params: CommonComponentParameters;
-	export let schema: any;
-	export let value: any;
+	import type { CommonComponentParameters } from '../types/CommonComponentParameters'
+	export let params: CommonComponentParameters
+	export let schema: any
+	export let value: any
 </script>
 
 <!-- event which calls pathChanged should be after all bindings so 'value' will have been updated -->
