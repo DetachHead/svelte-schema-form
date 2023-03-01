@@ -30,7 +30,8 @@
     const isMultiple = (schema.multiple as boolean) || false
     let inp: HTMLInputElement
     let dropArea: HTMLDivElement
-    const pathProgress = getContext(ProgressContext)
+    const pathProgress =
+        getContext<Writable<Record<string, Record<string, number>>>>(ProgressContext)
     let progress: Record<string, number>
     $: progress = $pathProgress[params.path.join('.')] || {}
     let renderedThumbnails = [] as (HTMLImageElement | HTMLDivElement)[]
@@ -171,6 +172,9 @@
         on:input={onInput}
         style="display: none"
     />
+    <!-- TODO: a11y stuff -->
+    <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/386 -->
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
         class="sf-drop-area {mode}"
         class:highlight

@@ -1,13 +1,17 @@
-import { get } from 'lodash-es'
+import type { JSONSchema } from './types/schema'
+import { lengthGreaterThan } from '@detachhead/ts-helpers/dist/functions/Array'
+import { subtract } from '@detachhead/ts-helpers/dist/functions/Number'
+import { cloneDeep, get } from 'lodash-es'
+import { throwIfUndefined } from 'throw-expression'
 
 export const upTo = (str: string, match: string, start?: number) => {
     const pos = str.indexOf(match, start)
-    return pos < 0 ? str.substring(start || 0) : str.substring(start || 0, pos)
+    return pos < 0 ? str.substring(start ?? 0) : str.substring(start ?? 0, pos)
 }
 
 export const upToLast = (str: string, match: string, end?: number) => {
     const pos = str.lastIndexOf(match, end)
-    return pos < 0 ? str.substring(0, end || str.length) : str.substring(0, pos)
+    return pos < 0 ? str.substring(0, end ?? str.length) : str.substring(0, pos)
 }
 
 export const after = (str: string, match: string, start?: number) => {
@@ -17,15 +21,16 @@ export const after = (str: string, match: string, start?: number) => {
 
 export const afterLast = (str: string, match: string, end?: number) => {
     const pos = str.lastIndexOf(match, end)
-    return pos < 0 ? '' : str.substring(pos + match.length, end || str.length)
+    return pos < 0 ? '' : str.substring(pos + match.length, end ?? str.length)
 }
 
-export function camelToWords(camel: string): string {
+export const camelToWords = (camel: string): string => {
     camel = camel.trim()
     const words: string[] = []
     let start = 0
     for (let end = 1; end < camel.length; end++) {
-        if ('A' <= camel[end] && camel[end] <= 'Z') {
+        const value = throwIfUndefined(camel[end])
+        if ('A' <= value && value <= 'Z') {
             words.push(camel.substring(start, end).toLowerCase())
             start = end
         }
@@ -35,54 +40,56 @@ export function camelToWords(camel: string): string {
     return words.join(' ')
 }
 
-export function camelToTitle(camel: string): string {
-    return camelToWords(camel).replace(/[a-z]/i, (ltr) => ltr.toUpperCase())
-}
+export const camelToTitle = (camel: string): string =>
+    camelToWords(camel).replace(/[a-z]/iu, (ltr) => ltr.toUpperCase())
 
 /**
  * manipulate the schema to allow any optional property to have a null value
  * which is appropriate for form input
  */
-export function nullOptionalsAllowed(schema: object): object {
-    if (schema === null || schema === undefined) schema = {}
-    const newSchema = deepCopy(schema)
+export const nullOptionalsAllowed = (schema: JSONSchema): object => {
+    const newSchema = cloneDeep(schema)
     nullOptionalsAllowedApply(newSchema as Record<string, unknown>)
     return newSchema
 }
 
-function nullOptionalsAllowedApply(schema: Record<string, unknown>) {
-    const req = (schema['required'] || []) as Array<string>
+const nullOptionalsAllowedApply = (schema: JSONSchema) => {
+    const req = (schema['required'] ?? []) as Array<string>
     if (schema['$ref']) return
-    switch (schema['type']) {
-        case 'object':
-            const properties = (schema['properties'] || {}) as Record<string, unknown>
+    switch (schema.type) {
+        case 'object': {
+            const properties = schema['properties'] ?? {}
             for (const prop in properties) {
                 if (req.indexOf(prop) < 0) {
                     nullOptionalsAllowedApply(properties[prop] as Record<string, unknown>)
                 }
             }
             break
-        case 'array':
-            const items = (schema['items'] || {}) as Record<string, unknown>
+        }
+        case 'array': {
+            const items = (schema['items'] ?? {}) as JSONSchema
             nullOptionalsAllowedApply(items)
             if (
                 items['oneOf'] &&
-                !(items['oneOf'] as any[]).some((subschema) => subschema['type'] == 'null')
+                !(items['oneOf'] as JSONSchema[]).some((subschema) => subschema['type'] === 'null')
             ) {
-                ;(items['oneOf'] as any[]).push({ type: 'null' })
+                ;(items['oneOf'] as JSONSchema[]).push({ type: 'null' })
             }
             break
+        }
         default:
             if (Array.isArray(schema['type'])) {
                 if (schema['type'].indexOf('null') < 0) {
                     schema['type'].push('null')
                 }
-            } else if (schema['type'] != 'null') {
-                schema['type'] = [schema['type'], 'null']
+            } else if (schema['type'] !== 'null') {
+                if (schema['type'] !== undefined) {
+                    schema['type'] = [schema['type'], 'null']
+                }
             }
             break
     }
-    const defns = schema['definitions'] as Record<string, unknown>
+    const defns = schema['definitions']
     if (defns) {
         for (const defn in defns) {
             nullOptionalsAllowedApply(defns[defn] as Record<string, unknown>)
@@ -90,60 +97,29 @@ function nullOptionalsAllowedApply(schema: Record<string, unknown>) {
     }
 }
 
-export function deepCopy(obj: object): object {
-    let copy
-
-    // Handle the 3 simple types, and null or undefined
-    if (null == obj || 'object' !== typeof obj) return obj
-
-    // Handle Date
-    if (obj instanceof Date) {
-        copy = new Date()
-        copy.setTime(obj.getTime())
-        return copy
-    }
-
-    // Handle Array
-    if (obj instanceof Array) {
-        copy = []
-        for (let i = 0, len = obj.length; i < len; i++) {
-            copy[i] = deepCopy(obj[i])
-        }
-        return copy
-    }
-
-    // Handle Object
-    if (obj instanceof Object) {
-        copy = {} as Record<string, unknown>
-        const recObj = obj as Record<string, unknown>
-        for (const attr in recObj) {
-            if (recObj.hasOwnProperty(attr)) copy[attr] = deepCopy(recObj[attr] as object)
-        }
-        return copy
-    }
-
-    throw new Error("Unable to copy obj! Its type isn't supported.")
-}
-
 let incrVal = 0
 export const incr = () => incrVal++
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: figure out what this function does
 export const substituteProperties = (subsPattern: string, value: any) => {
     if (!subsPattern || !value) return subsPattern
     const parts = subsPattern.split('${')
     const partsOut: string[] = []
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- see todo above
     partsOut.push(parts.shift()!)
     for (const part of parts) {
         if (part.includes('}')) {
             const path = upTo(part, '}')
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- see todo above
             const subsVal = (path === '' ? value : get(value, path)) || ''
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- see todo above
             partsOut.push(`${subsVal}${after(part, '}')}`)
         }
     }
     return partsOut.join('')
 }
 
-export function slashTrim(s: string): string {
+export const slashTrim = (s: string): string => {
     let start = 0
     let end = s.length
     if (s[start] === '/') start++
@@ -152,37 +128,32 @@ export function slashTrim(s: string): string {
     return s.substring(start, end)
 }
 
-export function slashTrimLeft(s: string): string {
-    return s.startsWith('/') ? s.substr(1) : s
-}
+export const slashTrimLeft = (s: string): string => (s.startsWith('/') ? s.substr(1) : s)
 
-export function pathToArray(path: string) {
-    return slashTrim(path)
+export const pathToArray = (path: string) =>
+    slashTrim(path)
         .split('/')
         .filter((s) => !!s)
-}
 
-export function getExtension(s: string): string {
+export const getExtension = (s: string): string => {
     const extStart = s.lastIndexOf('.')
     return extStart < 0 ? '' : s.substr(extStart + 1)
 }
 
-export function getFirstLine(s: string): string {
+export const getFirstLine = (s: string): string => {
     let lineEnd = s.indexOf('\n')
     if (lineEnd < 0) return s
     if (lineEnd > 0 && s[lineEnd - 1] === '\r') lineEnd--
     return s.substring(0, lineEnd)
 }
 
-export function getTailLines(s: string): string {
-    return s.substring(s.indexOf('\n') + 1)
-}
+export const getTailLines = (s: string): string => s.substring(s.indexOf('\n') + 1)
 
-export function pathCombine(...args: string[]): string {
+export const pathCombine = (...args: string[]): string => {
     const stripped = args.filter((a) => !!a)
-    if (stripped.length === 0) return ''
+    if (!lengthGreaterThan(stripped, 0)) return ''
     const startSlash = stripped[0].startsWith('/')
-    const endSlash = stripped[stripped.length - 1].endsWith('/')
+    const endSlash = stripped[subtract(stripped.length, 1)].endsWith('/')
     let joined = stripped
         .map((a) => slashTrim(a))
         .filter((a) => !!a)
@@ -192,6 +163,4 @@ export function pathCombine(...args: string[]): string {
     return joined
 }
 
-export function stringToHtml(s: string) {
-    return (s || '').replace('\n', '<br/>')
-}
+export const stringToHtml = (s: string) => (s || '').replace('\n', '<br/>')

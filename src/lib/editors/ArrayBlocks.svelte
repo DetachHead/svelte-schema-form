@@ -182,13 +182,19 @@
                     </h2>
                 </a>
                 <div class="actions">
+                    <!-- TODO
+                    svelte-ignore a11y-click-events-have-key-events -->
                     <span class="duplicate" on:click={onDuplicate(idx)} title="Duplicate this" />
+                    <!-- TODO
+                    svelte-ignore a11y-click-events-have-key-events -->
                     <span class="delete" on:click={onDelete(idx)} title="Delete this" />
                 </div>
             </li>
         {/each}
 
         {#if !adding}
+            <!-- TODO
+            svelte-ignore a11y-click-events-have-key-events -->
             <li
                 class="array-block add"
                 on:click={onAdd}

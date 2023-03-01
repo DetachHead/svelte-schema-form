@@ -41,6 +41,7 @@ const config = {
     rules: {
         // typescript-eslint enables this for typescript files only, but the js config files can benefit from it too because we aren't targeting an ancient node version
         'no-var': 'error',
+        '@typescript-eslint/explicit-module-boundary-types': 'off',
     },
     settings: {
         'import/parsers': {

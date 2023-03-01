@@ -64,8 +64,7 @@
                 .filter(([path]) => path.startsWith(pathPrefix))
                 .flatMap(([path, files]) => {
                     const pathPromises = [] as Promise<void>[]
-                    for (let i = 0; i < files.length; i++) {
-                        const file = files[i]
+                    for (const file of files) {
                         const destinationUrl =
                             uploadBaseUrl +
                             (uploadBaseUrl.endsWith('/') ? '' : '/') +
@@ -81,7 +80,7 @@
                                 const xhr = new XMLHttpRequest()
                                 xhr.upload.onprogress = (ev: ProgressEvent) =>
                                     progress(path, file.name, (ev.loaded / ev.total) * 100.0)
-                                xhr.upload.onloadend = (ev: ProgressEvent) => {
+                                xhr.upload.onloadend = () => {
                                     progress(
                                         path,
                                         file.name,
@@ -123,7 +122,7 @@
         showErrors = true
     }
 
-    componentContext.doUploads = doUploads
+    componentContext['doUploads'] = doUploads
 </script>
 
 <form class="svelte-schema-form" {action} class:dirty>

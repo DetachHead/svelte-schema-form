@@ -27,6 +27,8 @@
     {#if showLegend}
         <legend class="subset-label object-label">
             {#if params.collapsible}
+                <!-- TODO
+                svelte-ignore a11y-click-events-have-key-events -->
                 <span class="collapser {collapserOpenState}" on:click={toggle} />
             {/if}
             {#if params.containerParent !== 'array' || schema.title}

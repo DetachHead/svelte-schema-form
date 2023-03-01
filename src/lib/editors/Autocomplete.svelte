@@ -81,6 +81,8 @@
 <!-- event which calls pathChanged should be after all bindings so 'value' will have been updated -->
 <svelte:component this={params.components['fieldWrapper']} {params} {schema}>
     <div class="sf-autocomplete" class:readonly={readOnly}>
+        <!-- TODO
+        svelte-ignore a11y-click-events-have-key-events -->
         <div class="sf-selected-item input" on:click={toggleDropDown}>
             {#if inputState === 'searching'}
                 <input type="text" bind:value={match} on:keyup={keyup} bind:this={input} />
@@ -94,6 +96,8 @@
 
         <div style:display={dropdownState === 'open' ? 'block' : 'none'} class="sf-items">
             {#each options as item (item.id)}
+                <!-- TODO
+                svelte-ignore a11y-click-events-have-key-events -->
                 <div on:click={handleSelect(item)} class:selected={value === item.text}>
                     {#if item.image}
                         <img src={item.image} alt={item.text} />

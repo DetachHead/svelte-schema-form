@@ -36,10 +36,14 @@
         {#if params.collapsible || legendText}
             <legend class="subset-label array-label">
                 {#if params.collapsible}
+                    <!-- TODO
+                    svelte-ignore a11y-click-events-have-key-events -->
                     <span class="collapser {collapserOpenState}" on:click={toggle} />
                 {/if}
-                <span class="subset-label-title object-label-title"
-                    >{@html stringToHtml(legendText)}</span
+
+                <span class="subset-label-title object-label-title">
+                    <!-- eslint-disable-next-line svelte/no-at-html-tags -- this has been independently verified for safety 🚀 -->
+                    {@html stringToHtml(legendText)}</span
                 >
                 {#if schema.description}
                     <span class="subset-label-description object-label-description"

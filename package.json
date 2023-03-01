@@ -38,12 +38,13 @@
 	"devDependencies": {
 		"@detachhead/eslint-config": "^0.0.23",
 		"@playwright/test": "1.30.0",
-		"@trivago/prettier-plugin-sort-imports": "^4.1.1",
-		"@types/eslint": "^8.4.6",
 		"@rollup/plugin-inject": "^5.0.3",
 		"@sveltejs/adapter-auto": "^1.0.0",
 		"@sveltejs/kit": "^1.0.0",
 		"@sveltejs/package": "^1.0.0",
+		"@trivago/prettier-plugin-sort-imports": "^4.1.1",
+		"@types/babel__core": "^7.20.0",
+		"@types/eslint": "^8.4.6",
 		"@types/lodash-es": "^4.17.6",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
@@ -54,14 +55,18 @@
 		"sass": "^1.57.1",
 		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
+		"svelte-preprocess": "^5.0.1",
 		"tslib": "^2.4.1",
-		"typescript": "^4.9.3",
+		"typescript": "^5.1.0-dev.20230227",
 		"vite": "^4.0.0"
 	},
 	"type": "module",
 	"dependencies": {
+		"@detachhead/ts-helpers": "14.0.0-32e4e15c96e9a0c41fd01325262f79767e4e9ea5",
 		"@exodus/schemasafe": "^1.0.0-rc.9",
+		"@types/json-schema": "^7.0.11",
 		"json-refs": "^3.0.15",
-		"lodash-es": "^4.17.21"
+		"lodash-es": "^4.17.21",
+		"throw-expression": "^1.0.2"
 	}
 }

@@ -6,6 +6,7 @@
     import { stringToHtml } from '../utilities.js'
     import { values } from 'lodash-es'
     import { tick } from 'svelte'
+    import { throwIfUndefined } from 'throw-expression'
 
     export let params: CommonComponentParameters
     export let schema: any
@@ -146,6 +147,8 @@
         {#if params.collapsible || legendText}
             <legend class="subset-label array-label">
                 {#if params.collapsible}
+                    <!-- TODO
+                    svelte-ignore a11y-click-events-have-key-events -->
                     <span class="collapser {collapserOpenState}" on:click={toggle} />
                 {/if}
                 <span class="subset-label-title object-label-title"
@@ -161,6 +164,9 @@
 
         {#if collapserOpenState === 'open'}
             {#if !emptyText}
+                <!-- TODO: a11y stuff -->
+                <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/386 -->
+                <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                 <div
                     class="table-container"
                     tabindex="0"
@@ -172,8 +178,8 @@
                         {#each listFields as fieldName, idx}
                             <div
                                 class={headingClass(idx, sort)}
-                                on:click|stopPropagation={onSort(listProps[idx])}
-                                on:keyup|stopPropagation={onSortKey(listProps[idx])}
+                                on:click|stopPropagation={onSort(throwIfUndefined(listProps[idx]))}
+                                on:keyup|stopPropagation={onSortKey(throwIfUndefined(listProps[idx]))}
                                 tabIndex="0"
                             >
                                 {fieldName}
@@ -183,6 +189,8 @@
                             <div class="buttons-header">&nbsp;</div>
                         {/if}
                         {#each rowView as item, idx (idx)}
+                            <!-- TODO
+                            svelte-ignore a11y-click-events-have-key-events -->
                             <div
                                 class="row-wrapper"
                                 class:selected={idx === selectedIdx}

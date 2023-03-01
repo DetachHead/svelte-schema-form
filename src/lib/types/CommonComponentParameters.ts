@@ -22,8 +22,8 @@ export interface SchemaFormEvent {
     path: string[]
     value: any
     errors: ValidationErrors
-    pathValue?: any
-    op?: string
+    pathValue?: any | undefined
+    op?: string | undefined
 }
 
 export const childComponentParameters = (params: CommonComponentParameters, propName: string) => {

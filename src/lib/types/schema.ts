@@ -1,4 +1,7 @@
 import { camelToTitle } from '../utilities.js'
+import type { JSONSchema4, JSONSchema6, JSONSchema7 } from 'json-schema'
+
+export type JSONSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
 
 export function editorForSchema(schema: any): string {
     let type = schema['type']

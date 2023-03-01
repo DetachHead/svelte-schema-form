@@ -25,6 +25,8 @@
         type ValidationErrors,
     } from './types/CommonComponentParameters'
     import { incr, nullOptionalsAllowed } from './utilities.js'
+    import { lengthGreaterThan } from '@detachhead/ts-helpers/dist/functions/Array'
+    import { subtract } from '@detachhead/ts-helpers/dist/functions/Number'
     import { validator } from '@exodus/schemasafe'
     import get from 'lodash-es/get'
     import set from 'lodash-es/set'
@@ -40,7 +42,7 @@
     export let componentContext: Record<string, unknown> = {}
 
     const dispatch = createEventDispatcher<{
-        value: SchemaFormEvent
+        value:  SchemaFormEvent
     }>()
 
     export let validationErrors = {} as ValidationErrors
@@ -128,10 +130,10 @@
         const curr = path.length === 0 ? params.value : get(params.value, path)
         if (val === curr) return
 
-        if (val === undefined && path.length > 0) {
+        if (val === undefined && lengthGreaterThan(path, 0)) {
             const pathFront = path.slice(0, -1)
             const parent = pathFront.length ? get(params.value, path.slice(0, -1)) : params.value
-            delete parent[path[path.length - 1]]
+            delete parent[path[subtract(path.length, 1)]]
         } else {
             if (path.length === 0) {
                 params.value = val
