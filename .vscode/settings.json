@@ -22,5 +22,6 @@
     "git.useEditorAsCommitInput": false,
     "redhat.telemetry.enabled": false,
     "svelte.enable-ts-plugin": true,
-    "editor.acceptSuggestionOnCommitCharacter": false
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    "eslint.enable": true
 }

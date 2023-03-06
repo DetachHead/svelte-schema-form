@@ -1,14 +1,16 @@
 <script lang="ts">
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { schemaLabel } from '../types/schema'
+    import { type JSONSchema, schemaLabel } from '../types/schema'
     import { stringToHtml } from '../utilities.js'
+    import type { Json } from '@exodus/schemasafe'
+    import { throwIfUndefined } from 'throw-expression'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any
+    export let schema: (JSONSchema & { required?: string[] }) & { properties: JSONSchema }
+    export let value: { [id: string]: Json }
 
-    let propnames: string[]
+    let propNames: string[]
     $: propNames = Object.keys(schema.properties)
     let collapserOpenState: 'open' | 'closed' =
         params.path.length === 0 || params.containerParent === 'array' || !params.collapsible
@@ -32,12 +34,14 @@
                 <span class="collapser {collapserOpenState}" on:click={toggle} />
             {/if}
             {#if params.containerParent !== 'array' || schema.title}
-                <span class="subset-label-title object-label-title"
-                    >{@html stringToHtml(schemaLabel(schema, params.path))}</span
+                <span class="subset-label-title object-label-title">
+                    <!-- eslint-disable-next-line svelte/no-at-html-tags -- this has been independently verified for safety 🚀 -->
+                    {@html stringToHtml(schemaLabel(schema, params.path))}</span
                 >
                 {#if schema.description}
-                    <span class="subset-label-description object-label-description"
-                        >{@html stringToHtml(schema.description)}</span
+                    <span class="subset-label-description object-label-description">
+                        <!-- eslint-disable-next-line svelte/no-at-html-tags -- this has been independently verified for safety 🚀 -->
+                        {@html stringToHtml(schema.description)}</span
                     >
                 {/if}
             {/if}
@@ -50,11 +54,11 @@
                 params={{
                     ...params,
                     path: [...params.path, propName],
-                    required: (schema?.required || []).includes(propName),
+                    required: (schema.required ?? []).includes(propName),
                     containerParent: 'object',
-                    containerReadOnly: params.containerReadOnly || schema.readOnly || false,
+                    containerReadOnly: (params.containerReadOnly || schema.readOnly) ?? false,
                 }}
-                value={value?.[propName]}
+                value={throwIfUndefined(value[propName])}
                 bind:schema={schema.properties[propName]}
             />
         {/each}

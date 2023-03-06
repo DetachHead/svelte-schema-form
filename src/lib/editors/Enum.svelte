@@ -1,13 +1,16 @@
 <script lang="ts">
+    import type { JSONSchema } from '$lib/types/schema'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
+    import type { Json } from '@exodus/schemasafe'
+    import { throwIfUndefined } from 'throw-expression'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any
-    let enumVals: string[]
+    export let schema: JSONSchema
+    export let value: Json
     let enumText: string[]
-    $: enumVals = schema.enum
-    $: enumText = schema.enumText || schema.enum
+    $: enumVals = throwIfUndefined(schema.enum)
+    // TODO: fix types
+    $: enumText = (schema.enumText ?? schema.enum ?? []) as string[]
 </script>
 
 <!-- event which calls pathChanged should be after all bindings so 'value' will have been updated -->
@@ -16,12 +19,17 @@
         id={params.path.join('.')}
         name={params.path.join('.')}
         {value}
-        disabled={schema.readOnly || params.containerReadOnly}
-        on:change={(ev) => params.pathChanged(params.path, ev.currentTarget.value || undefined)}
+        disabled={schema.readOnly ?? params.containerReadOnly}
+        on:change={(ev) =>
+            params.pathChanged(
+                params.path,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/390
+                ev.currentTarget.value || undefined,
+            )}
     >
         <option />
         {#each enumVals as enumVal, idx}
-            <option value={enumVal}>{(enumText || [])[idx]}</option>
+            <option value={enumVal}>{enumText[idx]}</option>
         {/each}
     </select>
 </svelte:component>

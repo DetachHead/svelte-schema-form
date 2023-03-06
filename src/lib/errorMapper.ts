@@ -1,12 +1,14 @@
-import { jsonPointerToPath } from './types/schema'
+import { type JSONSchema, jsonPointerToPath } from './types/schema'
 import { afterLast } from './utilities.js'
+import type { Json } from '@exodus/schemasafe'
+import { throwIfUndefined } from 'throw-expression'
 
-export function errorMapper(
-    schema: any,
-    value: any,
+export const errorMapper = (
+    schema: JSONSchema,
+    value: Json,
     keywordLocation: string,
     instanceLocation: string,
-): [string, string] {
+): [string, string] => {
     const location = jsonPointerToPath(instanceLocation)
     const keyword = afterLast(keywordLocation, '/')
     const keyValue = jsonPointerToPath(keywordLocation)
@@ -23,14 +25,18 @@ export function errorMapper(
             return [location, `Please enter text no longer than ${keyValue} characters`]
         case 'pattern':
             return [location, 'Please enter properly formatted value']
-        case 'format':
+        case 'format': {
             const valMap = {
                 'date-time': 'date and time',
                 time: 'time',
                 date: 'date',
                 email: 'email address',
             } as Record<string, string>
-            return [location, `Please enter a properly formatted ${valMap[keyValue]}`]
+            return [
+                location,
+                `Please enter a properly formatted ${throwIfUndefined(valMap[keyValue])}`,
+            ]
+        }
     }
     return [location, `Fails to satisfy schema at ${jsonPointerToPath(keywordLocation)}`]
 }

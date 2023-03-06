@@ -1,8 +1,9 @@
 <script lang="ts">
+    import type { JSONSchema } from '$lib/types/schema'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
 
     export let params: CommonComponentParameters
-    export let schema: any
+    export let schema: JSONSchema
     export let value: boolean
 </script>
 
@@ -13,7 +14,12 @@
         name={params.path.join('.')}
         type="checkbox"
         checked={value || false}
-        disabled={schema.readOnly || params.containerReadOnly}
-        on:change={(ev) => params.pathChanged(params.path, ev.currentTarget.checked)}
+        disabled={schema.readOnly ?? params.containerReadOnly}
+        on:change={(ev) =>
+            params.pathChanged(
+                params.path,
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/390
+                ev.currentTarget.checked,
+            )}
     />
 </svelte:component>

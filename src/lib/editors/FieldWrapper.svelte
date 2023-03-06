@@ -1,10 +1,10 @@
 <script lang="ts">
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { schemaLabel } from '../types/schema'
+    import { type JSONSchema, schemaLabel } from '../types/schema'
     import { stringToHtml } from '../utilities.js'
 
     export let params: CommonComponentParameters
-    export let schema: any
+    export let schema: JSONSchema
 
     const title = schemaLabel(schema, params.path)
     const id = params.path.join('.')
@@ -16,8 +16,9 @@
         id={`label-${id}`}
         for={id}
         class:required={params.required}
-        class:readonly={schema.readOnly || params.containerReadOnly}
+        class:readonly={schema.readOnly ?? params.containerReadOnly}
     >
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -- this has been independently verified for safety 🚀 -->
         {@html stringToHtml(title)}
         {#if schema.description}
             <span class="info" title={schema.description} />

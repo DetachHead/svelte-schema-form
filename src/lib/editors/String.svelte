@@ -1,10 +1,11 @@
 <script lang="ts">
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { editorForSchema } from '../types/schema'
+    import { type JSONSchema, editorForSchema } from '../types/schema'
+    import type { Json } from '@exodus/schemasafe'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any
+    export let schema: JSONSchema
+    export let value: Json
 
     let type = 'text'
     $: {
@@ -30,8 +31,10 @@
         id={params.path.join('.')}
         name={params.path.join('.')}
         {type}
-        value={value || ''}
-        disabled={schema.readOnly || params.containerReadOnly}
-        on:input={(ev) => params.pathChanged(params.path, ev.currentTarget.value || undefined)}
+        value={value ?? ''}
+        disabled={schema.readOnly ?? params.containerReadOnly}
+        on:input={(ev) =>
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/390
+            params.pathChanged(params.path, ev.currentTarget.value || undefined)}
     />
 </svelte:component>

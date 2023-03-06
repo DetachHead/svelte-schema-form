@@ -1,15 +1,21 @@
 <script lang="ts">
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { emptyValue } from '../types/schema'
+    import { type JSONSchema, emptyValue } from '../types/schema'
     import { pathCombine } from '../utilities.js'
-    import _, { max } from 'lodash-es'
+    import type { Json } from '@exodus/schemasafe'
+    import _ from 'lodash-es'
+    import { throwIfNull, throwIfUndefined } from 'throw-expression'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any[]
+    export let schema: JSONSchema & { items: JSONSchema }
+    export let value:
+        | {
+              [id: string]: Json
+          }[]
+        | undefined
 
-    $: value = value || []
+    $: actualValue = value ?? []
 
     // check schema
     if (schema.type !== 'array' || schema.items.type !== 'object') {
@@ -20,110 +26,98 @@
     let hovering: number | boolean = false
 
     const onAdd = () => {
-        params.pathChanged(params.path, [...(value || []), emptyValue(schema.items)])
+        params.pathChanged(params.path, [...actualValue, emptyValue(schema.items)])
         adding = true
     }
 
     const onAddUpdate = async () => {
-        const idx = value.length - 1
+        const idx = actualValue.length - 1
         const newPath = [...params.path, idx.toString()]
         // upload any files on the add form
-        const doUploads = params.componentContext?.['doUploads'] as (
-            pathPrefix: string,
-        ) => Promise<void>
+        const doUploads = params.componentContext?.['doUploads'] as
+            | ((pathPrefix: string) => Promise<void>)
+            | undefined
         if (doUploads) {
             await doUploads(newPath.join('.'))
         }
 
-        params.pathChanged(newPath, value[idx])
+        params.pathChanged(newPath, actualValue[idx])
         adding = false
     }
 
     const onDelete = (idx: number) => () => {
-        params.pathChanged(params.path, [...value.slice(0, idx), ...value.slice(idx + 1)])
+        params.pathChanged(params.path, [
+            ...actualValue.slice(0, idx),
+            ...actualValue.slice(idx + 1),
+        ])
     }
 
     const onDuplicate = (idx: number) => () => {
         params.pathChanged(params.path, [
-            ...value.slice(0, idx),
-            value[idx],
-            JSON.parse(JSON.stringify(value[idx])),
-            ...value.slice(idx + 1),
+            ...actualValue.slice(0, idx),
+            actualValue[idx],
+            JSON.parse(JSON.stringify(actualValue[idx])),
+            ...actualValue.slice(idx + 1),
         ])
     }
 
-    const onUp = (idx: number) => () => {
-        if (idx > 0) {
-            params.pathChanged(params.path, [
-                ...value.slice(0, idx - 1),
-                value[idx],
-                value[idx - 1],
-                ...value.slice(idx + 1),
-            ])
-        }
-    }
-
-    const onDown = (idx: number) => () => {
-        if (idx < value.length - 1) {
-            params.pathChanged(params.path, [
-                ...value.slice(0, idx),
-                value[idx + 1],
-                value[idx],
-                ...value.slice(idx + 2),
-            ])
-        }
-    }
-
     const onDragstart = (i: number) => (ev: DragEvent) => {
-        ev.dataTransfer!.effectAllowed = 'move'
-        ev.dataTransfer!.dropEffect = 'move'
-        ev.dataTransfer!.setData('text/plain', i.toString())
+        const dataTransfer = throwIfNull(ev.dataTransfer)
+        dataTransfer.effectAllowed = 'move'
+        dataTransfer.dropEffect = 'move'
+        dataTransfer.setData('text/plain', i.toString())
     }
 
     const onDrop = (i: number) => (ev: DragEvent) => {
-        ev.dataTransfer!.dropEffect = 'move'
-        const start = parseInt(ev.dataTransfer!.getData('text/plain'))
+        const dataTransfer = throwIfNull(ev.dataTransfer)
+        dataTransfer.dropEffect = 'move'
+        const start = parseInt(dataTransfer.getData('text/plain'))
 
+        const startValue = throwIfUndefined(actualValue[start])
         if (start < i) {
             params.pathChanged(params.path, [
-                ...value.slice(0, start),
-                ...value.slice(start + 1, i),
-                value[start],
-                ...value.slice(i),
+                ...actualValue.slice(0, start),
+                ...actualValue.slice(start + 1, i),
+                startValue,
+                ...actualValue.slice(i),
             ])
         } else if (i < start) {
             params.pathChanged(params.path, [
-                ...value.slice(0, i),
-                value[start],
-                ...value.slice(i, start),
-                ...value.slice(start + 1),
+                ...actualValue.slice(0, i),
+                startValue,
+                ...actualValue.slice(i, start),
+                ...actualValue.slice(start + 1),
             ])
         }
 
         hovering = false
     }
 
-    let currentUrl = schema.effectiveUrl || location.href
-    if (currentUrl.includes('#')) currentUrl = currentUrl.split('#')[0]
-    if (currentUrl.includes('?')) currentUrl = currentUrl.split('?')[0]
+    let currentUrl = schema.effectiveUrl ?? location.href
+    if (currentUrl.includes('#')) currentUrl = throwIfUndefined(currentUrl.split('#')[0])
+    if (currentUrl.includes('?')) currentUrl = throwIfUndefined(currentUrl.split('?')[0])
 
-    const getUrl = (item: any, idx: number) => {
+    // TODO: figure out if _idx is needed, its unused but could effect when the function gets rerun
+    const getUrl = (item: Json, _idx: number) => {
         let pathEl = ''
         if (schema.itemPathPattern) {
-            const itemPathPattern = schema.itemPathPattern as string
-            pathEl = itemPathPattern.replace(/\$\{([^}]*)\}/gi, (_substring, p1) =>
+            const itemPathPattern = schema.itemPathPattern
+            pathEl = itemPathPattern.replace(/\$\{([^}]*)\}/giu, (_substring, p1: string) =>
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- TODO: figure out what this does
                 encodeURIComponent((p1 === '' ? item : _.get(item, p1.split('.'))) || ''),
             )
         }
         if (!pathEl) {
-            pathEl = encodeURIComponent(item.name || item.title || '')
+            item = throwIfNull(item) as Record<string, Json>
+            pathEl = encodeURIComponent(getName(item))
         }
         return pathCombine(currentUrl, pathEl)
     }
 
-    const getName = (item: any) => (item.name || item.title || '') as string
-    const getArrayBlockClasses = (item: any) => {
-        const name = getName(item)
+    const getName = (item: Record<string, Json>) =>
+        ((item['name'] ?? item['title']) as string) || ''
+    const getArrayBlockClasses = (item: Json) => {
+        const name = getName(item as Record<string, Json>)
         const nameParts = name.split(' ')
         const maxWidth = nameParts.reduce(
             (currMax, word) => (word.length > currMax ? word.length : currMax),
@@ -142,32 +136,34 @@
         return 'array-block small'
     }
 
-    let addItemSchema: any
+    let addItemSchema: JSONSchema
     $: {
         const nonArrayProperties = Object.fromEntries(
-            Object.entries(schema.items.properties).filter(
-                ([propName, subschema]) => (subschema as { type: string }).type !== 'array',
+            Object.entries(throwIfUndefined(schema.items.properties)).filter(
+                ([_propName, subschema]) => (subschema as { type: string }).type !== 'array',
             ),
         )
         addItemSchema = {
-            ...schema.items,
+            ...(schema.items as JSONSchema),
             type: 'object',
             properties: nonArrayProperties,
             required:
-                schema.items.required?.filter((prop: string) =>
+                (schema.items.required as string[] | undefined)?.filter((prop) =>
                     Object.keys(nonArrayProperties).includes(prop),
-                ) || [],
-        }
+                ) ?? [],
+        } satisfies JSONSchema
     }
-    $: lastIdx = (value || []).length
+    $: lastIdx = actualValue.length
 </script>
 
 <div id={params.path.join('.')} class="subset array-blocks depth-{params.path.length}">
     <ol>
-        {#each value || [] as item, idx (item)}
+        {#each actualValue as item, idx (item)}
             <li
                 class={getArrayBlockClasses(item)}
-                style:background-image={item.thumbnail ? `url('${item.thumbnail}')` : ''}
+                style:background-image={throwIfNull(item)['thumbnail']
+                    ? `url('${String(item['thumbnail'])}')`
+                    : ''}
                 draggable={true}
                 on:dragstart={onDragstart(idx)}
                 on:drop|preventDefault={onDrop(idx)}
@@ -210,10 +206,10 @@
         <SubSchemaForm
             params={{
                 ...params,
-                path: [...params.path, (value.length - 1).toString()],
+                path: [...params.path, (actualValue.length - 1).toString()],
                 containerParent: 'array',
             }}
-            value={value[value.length - 1]}
+            value={throwIfUndefined(actualValue[actualValue.length - 1])}
             bind:schema={addItemSchema}
         />
         <button type="button" class="submit-button new-item-submit" on:click={onAddUpdate}

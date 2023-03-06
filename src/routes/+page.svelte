@@ -1,9 +1,10 @@
 <script lang="ts">
-    import SubmitForm from '$lib/SubmitForm.svelte'
+    import SubmitForm, { type SubmitFormEvent } from '$lib/SubmitForm.svelte'
+    import type { JSONSchema } from '$lib/types/schema'
     import 'svelte-schema-form/css/basic-skin.scss'
     import 'svelte-schema-form/css/layout.scss'
 
-    let schema: any = {
+    let schema: JSONSchema = {
         type: 'object',
         properties: {
             something: { type: 'string', maxLength: 5, description: 'description for something' },
@@ -44,10 +45,10 @@
         required: ['amount'],
         pathPattern: 'item_${amount}',
     }
-    let storedSchema = undefined
+    let storedSchema: string | null = null
     if (typeof window !== 'undefined') {
         storedSchema = window.localStorage.getItem('schema')
-        if (storedSchema) schema = JSON.parse(storedSchema)
+        if (storedSchema) schema = JSON.parse(storedSchema) as JSONSchema
     }
     let jsonInvalid = false
 
@@ -55,10 +56,14 @@
     let valueJson = ''
     let collapsible = false
 
-    const schemaUpdate = (ev: any) => {
+    const schemaUpdate = (
+        ev: KeyboardEvent & {
+            currentTarget: EventTarget & HTMLTextAreaElement
+        },
+    ) => {
         const newSchema = ev.currentTarget.value
         try {
-            schema = JSON.parse(newSchema)
+            schema = JSON.parse(newSchema) as JSONSchema
             jsonInvalid = false
             if (typeof window !== 'undefined') {
                 window.localStorage.setItem('schema', newSchema)
@@ -68,7 +73,8 @@
         }
     }
 
-    const submit = (e: CustomEvent) => {
+    const submit = (e: CustomEvent<SubmitFormEvent>) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/390#issuecomment-1455456830
         valueJson = JSON.stringify(e.detail.value, undefined, 2).trim()
     }
 

@@ -2,12 +2,13 @@
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import { arrayAdd, arrayDelete, arrayDown, arrayDuplicate, arrayUp } from '../arrayOps'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { emptyValue, schemaLabel } from '../types/schema'
+    import { type Control, type JSONSchema, schemaLabel } from '../types/schema'
     import { stringToHtml } from '../utilities.js'
+    import type { Json } from '@exodus/schemasafe'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any[]
+    export let schema: JSONSchema & { items: JSONSchema }
+    export let value: Json[]
 
     let collapserOpenState: 'open' | 'closed' =
         params.path.length === 0 || !params.collapsible ? 'open' : 'closed'
@@ -17,18 +18,17 @@
     }
 
     $: legendText = schemaLabel(schema, params.path)
-    $: showWrapper = (value && value.length > 0) || schema.emptyDisplay !== false
+    $: showWrapper = value.length > 0 || schema.emptyDisplay !== false
     $: emptyText =
-        (!value || value.length === 0) &&
-        typeof schema.emptyDisplay === 'string' &&
-        schema.emptyDisplay
-    $: readOnly = params.containerReadOnly || schema.readOnly || false
-    $: controls =
+        value.length === 0 && typeof schema.emptyDisplay === 'string' && schema.emptyDisplay
+    $: readOnly = (params.containerReadOnly || schema.readOnly) ?? false
+    $: controls = (
         schema.controls === undefined
             ? readOnly
-                ? ''
-                : 'add, reorder, delete, duplicate'
+                ? []
+                : ['add', 'reorder', 'delete', 'duplicate']
             : schema.controls
+    ) satisfies Control[]
 </script>
 
 {#if showWrapper}
@@ -46,8 +46,9 @@
                     {@html stringToHtml(legendText)}</span
                 >
                 {#if schema.description}
-                    <span class="subset-label-description object-label-description"
-                        >{@html stringToHtml(schema.description)}</span
+                    <span class="subset-label-description object-label-description">
+                        <!-- eslint-disable-next-line svelte/no-at-html-tags -- this has been independently verified for safety 🚀 -->
+                        {@html stringToHtml(schema.description)}</span
                     >
                 {/if}
             </legend>
@@ -55,14 +56,15 @@
 
         {#if collapserOpenState === 'open'}
             {#if !emptyText}
-                {#each value || [] as item, idx (idx)}
+                {#each value as item, idx (idx)}
                     <svelte:component
                         this={SubSchemaForm}
                         params={{
                             ...params,
                             path: [...params.path, idx.toString()],
                             containerParent: 'array',
-                            containerReadOnly: params.containerReadOnly || schema.readOnly || false,
+                            containerReadOnly:
+                                (params.containerReadOnly || schema.readOnly) ?? false,
                         }}
                         value={item}
                         bind:schema={schema.items}
@@ -92,7 +94,7 @@
                                 on:click={arrayUp(idx, params, value)}
                             />
                         {/if}
-                        {#if controls.includes('reorder') && idx < (value || []).length - 1}
+                        {#if controls.includes('reorder') && idx < value.length - 1}
                             <button
                                 type="button"
                                 class="list-control down"

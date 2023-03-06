@@ -48,12 +48,11 @@
 		"@types/lodash-es": "^4.17.6",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
 		"@typescript-eslint/parser": "^5.27.0",
-		"eslint-plugin-svelte": "^2.14.1",
+		"eslint-plugin-svelte": "^2.19.2",
 		"node-stdlib-browser": "^1.2.0",
 		"prettier": "^2.8.4",
 		"prettier-plugin-svelte": "^2.7.0",
 		"sass": "^1.57.1",
-		"svelte": "^3.54.0",
 		"svelte-check": "^3.0.1",
 		"svelte-preprocess": "^5.0.1",
 		"tslib": "^2.4.1",
@@ -62,11 +61,13 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@detachhead/ts-helpers": "14.0.0-32e4e15c96e9a0c41fd01325262f79767e4e9ea5",
+		"@detachhead/ts-helpers": "15.0.0-a9929cb12aff2f07b33df3fcda975ce0d67b9523",
 		"@exodus/schemasafe": "^1.0.0-rc.9",
 		"@types/json-schema": "^7.0.11",
 		"json-refs": "^3.0.15",
 		"lodash-es": "^4.17.21",
-		"throw-expression": "^1.0.2"
+		"svelte": "^3.54.0",
+		"throw-expression": "^1.0.2",
+		"ts-toolbelt": "^9.6.0"
 	}
 }

@@ -1,10 +1,10 @@
 <script lang="ts">
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { editorForSchema } from '../types/schema'
+    import type { JSONSchema } from '../types/schema'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any
+    export let schema: JSONSchema
+    export let value: number | undefined
 
     const type = 'text'
     const context = params.componentContext
@@ -13,18 +13,18 @@
     if (context && context['formatCurrency']) {
         formatCurrency = context['formatCurrency'] as (value?: number) => string
     } else {
-        formatCurrency = (value?: number) => {
-            if (!value && value !== 0) return ''
-            return value === Math.round(value)
-                ? `${currencySymbol}${value}`
-                : `${currencySymbol}${value.toFixed(2)}`
+        formatCurrency = (amount?: number) => {
+            if (!amount && amount !== 0) return ''
+            return amount === Math.round(amount)
+                ? `${currencySymbol}${amount}`
+                : `${currencySymbol}${amount.toFixed(2)}`
         }
     }
     let holdString = ''
 
     const onInput = (ev: Event & { currentTarget: EventTarget & HTMLInputElement }) => {
         const str = ev.currentTarget.value
-        if (str === '' || str == currencySymbol) {
+        if (str === '' || str === currencySymbol) {
             holdString = ''
             params.pathChanged(params.path, null)
         } else {
@@ -39,7 +39,7 @@
         }
     }
 
-    $: formattedString = holdString ? holdString : formatCurrency(value || '')
+    $: formattedString = holdString ? holdString : formatCurrency(value)
 </script>
 
 <!-- event which calls pathChanged should be after all bindings so 'value' will have been updated -->
@@ -50,7 +50,7 @@
         class="currency"
         {type}
         value={formattedString}
-        disabled={schema.readOnly || params.containerReadOnly}
+        disabled={schema.readOnly ?? params.containerReadOnly}
         on:input={onInput}
     />
 </svelte:component>

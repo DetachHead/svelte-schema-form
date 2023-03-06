@@ -1,10 +1,46 @@
 import { camelToTitle } from '../utilities.js'
+import type { Json } from '@exodus/schemasafe'
 import type { JSONSchema4, JSONSchema6, JSONSchema7 } from 'json-schema'
+import { throwIfUndefined } from 'throw-expression'
 
-export type JSONSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
+export type Control = 'delete' | 'duplicate' | 'reorder' | 'add'
 
-export function editorForSchema(schema: any): string {
-    let type = schema['type']
+export type JSONSchema = (JSONSchema4 | JSONSchema6 | JSONSchema7) & {
+    // TODO: what are these props? they arent documented
+    pathPattern?: string
+    itemPathPattern?: string
+    effectiveUrl?: string
+    thumbnail?: string
+    direction?: string
+    editor?: string
+    hidden?: boolean
+
+    /**
+     * Custom property which determines how the array displays if it has no items. `false` means don't show a header or wrapper.
+     * `true` means show the header and wrapper with no items. A string value means display this message in the wrapper.
+     */
+    emptyDisplay?: boolean | string
+
+    /**
+     * This property if present and set to `true` will disable the editor for this field, only using it for display.
+     * All children of this field will also be read only
+     */
+    readOnly?: boolean
+
+    /**
+     * Custom property which is a comma separated list of controls including `delete,` `duplicate`, `reorder`, `add`.
+     * Default is all these. A readOnly array has no controls.
+     */
+    controls?: Control[]
+
+    /**
+     * Custom property to supply display labels for the Select element as an array of strings, one for each enum value
+     */
+    enumText?: string[]
+}
+
+export const editorForSchema = (schema: JSONSchema): string => {
+    let type = schema['type'] as string
     if (schema['enum']) type = 'enum'
     if (schema['format']) type += '-' + schema['format']
     if (schema['hidden']) type = 'hidden'
@@ -16,14 +52,14 @@ export function editorForSchema(schema: any): string {
         case 'string-email':
         case 'string-password':
         case 'number-currency':
-            return schema['format']
+            return throwIfUndefined(schema['format'])
         default:
             return type
     }
 }
 
-export function emptyValue(schema: any): any {
-    switch (schema['type'] || '') {
+export const emptyValue = (schema: JSONSchema | undefined): Record<string, Json> | [] | null => {
+    switch (schema?.['type'] ?? '') {
         case 'object':
             return {}
         case 'array':
@@ -33,17 +69,17 @@ export function emptyValue(schema: any): any {
     }
 }
 
-export function schemaLabel(schema: any, path: string[]): string {
-    return schema.title || camelToTitle(path.slice(-1)[0] || '')
+export const schemaLabel = (schema: JSONSchema, path: string[]): string => {
+    return schema.title ?? camelToTitle(path.slice(-1)[0] ?? '')
 }
 
-export function jsonPointerToPath(pointer: string) {
+export const jsonPointerToPath = (pointer: string) => {
     if (pointer.startsWith('/')) {
         pointer = pointer.substring(1)
     } else if (pointer.startsWith('#/')) {
         pointer = pointer.substring(2)
     } else if (pointer.startsWith('http')) {
-        pointer = pointer.split('#/')[1] || ''
+        pointer = pointer.split('#/')[1] ?? ''
     }
 
     const pathEls = [] as string[]

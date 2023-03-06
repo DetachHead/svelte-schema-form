@@ -1,14 +1,21 @@
+import type { Json } from '@exodus/schemasafe'
+import type { SvelteComponentTyped } from 'svelte'
+
 export type ValidationErrors = Record<string, string>
 
 export const FileNone = Symbol()
 export const ProgressContext = Symbol()
 
+export type Components = Record<string, new (...args: unknown[]) => SvelteComponentTyped>
+
+export type PathChangedValue = Json | typeof FileNone | undefined | FileList
+
 export interface CommonComponentParameters {
     path: string[]
-    pathChanged: (path: string[], val: any, op?: string) => boolean
-    components: Record<string, new (...args: any[]) => any>
+    pathChanged: (path: string[], val: PathChangedValue, op?: string) => boolean | PathChangedValue
+    components: Components
     componentContext?: Record<string, unknown>
-    value: any
+    value: Json
     validationErrors: ValidationErrors
     required?: boolean
     containerParent: 'none' | 'array' | 'object'
@@ -20,9 +27,9 @@ export interface CommonComponentParameters {
 
 export interface SchemaFormEvent {
     path: string[]
-    value: any
+    value: Json
     errors: ValidationErrors
-    pathValue?: any | undefined
+    pathValue?: unknown | undefined
     op?: string | undefined
 }
 

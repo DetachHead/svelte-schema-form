@@ -1,17 +1,16 @@
 <script lang="ts">
     import type { CommonComponentParameters } from './types/CommonComponentParameters'
-    import { editorForSchema } from './types/schema'
+    import { type JSONSchema, editorForSchema } from './types/schema'
+    import type { Json } from '@exodus/schemasafe'
     import { resolveRefs } from 'json-refs'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any
+    export let schema: JSONSchema
+    export let value: Json
 
     const { components } = params
 
-    let typeComponent: any
-
-    const getComponent = (resolvedSchema: any) => components[editorForSchema(resolvedSchema)]
+    const getComponent = (resolvedSchema: JSONSchema) => components[editorForSchema(resolvedSchema)]
 </script>
 
 {#await resolveRefs(schema)}

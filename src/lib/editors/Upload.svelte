@@ -1,19 +1,18 @@
 <script lang="ts">
+    import type { JSONSchema } from '$lib/types/schema'
     import {
         type CommonComponentParameters,
         FileNone,
         ProgressContext,
     } from '../types/CommonComponentParameters'
     import { after, afterLast } from '../utilities.js'
-    import Number from './Number.svelte'
-    import String from './String.svelte'
-    import { entries, keys } from 'lodash-es'
     import { getContext } from 'svelte'
     import type { Writable } from 'svelte/store'
+    import { throwIfNull } from 'throw-expression'
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any
+    export let schema: JSONSchema & { multiple?: boolean; warningKb?: number; maximumKb?: number }
+    export let value: string | undefined
     export let highlight = false
 
     interface Details {
@@ -27,13 +26,13 @@
     // stage must be created imperatively, but thumbnails which use the stored urls can be managed by Svelte
     // rendering
 
-    const isMultiple = (schema.multiple as boolean) || false
+    const isMultiple = schema.multiple ?? false
     let inp: HTMLInputElement
     let dropArea: HTMLDivElement
     const pathProgress =
         getContext<Writable<Record<string, Record<string, number>>>>(ProgressContext)
     let progress: Record<string, number>
-    $: progress = $pathProgress[params.path.join('.')] || {}
+    $: progress = $pathProgress[params.path.join('.')] ?? {}
     let renderedThumbnails = [] as (HTMLImageElement | HTMLDivElement)[]
     let details = {} as Record<string, Details>
     let mode: 'uploader' | 'link' = 'uploader'
@@ -49,7 +48,7 @@
             renderedThumbnails = []
         }
     }
-    $: readOnly = schema.readOnly || params.containerReadOnly || false
+    $: readOnly = (schema.readOnly ?? params.containerReadOnly) || false
 
     const chooseFile = () => {
         if (!isMultiple) {
@@ -82,7 +81,8 @@
         }
     }
 
-    const onInput = (ev: any) => {
+    // TODO: figure out if the parameter is needed, even tho its unused it can effect when svelte re-runs this function
+    const onInput = (_ev: unknown) => {
         chooseFile()
     }
 
@@ -97,7 +97,8 @@
         ev.preventDefault()
     }
 
-    const dragLeave = (ev: any) => {
+    // TODO: figure out if the parameter is needed, even tho its unused it can effect when svelte re-runs this function
+    const dragLeave = (_ev: unknown) => {
         if (readOnly) return
         highlight = false
     }
@@ -106,12 +107,14 @@
         if (file.type.startsWith('image')) {
             const img = document.createElement('img')
             img.classList.add('sf-upload-thumb')
-            ;(img as any).file = file
+            // TODO: whats up with this
+            ;(img as unknown as { file: File }).file = file
+            // eslint-disable-next-line svelte/no-dom-manipulating -- TODO: can this be done a better way
             dropArea.append(img)
             renderedThumbnails.push(img)
             const reader = new FileReader()
             reader.onload = (e) => {
-                img.src = e.target!.result as string
+                img.src = throwIfNull(e.target).result as string
             }
             reader.readAsDataURL(file)
         } else {
@@ -119,6 +122,7 @@
             div.classList.add('sf-upload-file')
             div.title = file.name
             div.innerText = afterLast(file.name, '.') || after(file.type, '/')
+            // eslint-disable-next-line svelte/no-dom-manipulating -- TODO: can this be done a better way
             dropArea.append(div)
             renderedThumbnails.push(div)
         }
@@ -173,7 +177,6 @@
         style="display: none"
     />
     <!-- TODO: a11y stuff -->
-    <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/386 -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
         class="sf-drop-area {mode}"
@@ -202,9 +205,10 @@
                 name={params.path.join('.')}
                 disabled={readOnly}
                 class="sf-upload-input"
-                value={value || ''}
-                on:click|stopPropagation={() => {}}
+                value={value ?? ''}
+                on:click|stopPropagation={() => undefined}
                 on:input={(ev) =>
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/390
                     params.pathChanged(params.path, ev.currentTarget.value || undefined)}
             />
         {/if}

@@ -1,6 +1,8 @@
 <script lang="ts">
+    import type { JSONSchema } from '$lib/types/schema'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { select_options, tick } from 'svelte/internal'
+    import type { Json } from '@exodus/schemasafe'
+    import { tick } from 'svelte/internal'
 
     interface OptionVal {
         id: string
@@ -9,8 +11,12 @@
     }
 
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any
+    export let schema: JSONSchema & {
+        type: 'string'
+        editor: 'autocomplete'
+        url?: string
+    }
+    export let value: Json
 
     let inputState: 'showing-value' | 'searching' = 'showing-value'
     let match = ''
@@ -18,23 +24,23 @@
     let selected: OptionVal | undefined = undefined
     let options = [] as OptionVal[]
     let url: string
-    let timerHandle: any = null
+    let timerHandle: number | null = null
 
-    $: url = schema['url'] || ''
-    $: readOnly = params.containerReadOnly || schema.readOnly || false
+    $: url = schema['url'] ?? ''
+    $: readOnly = (params.containerReadOnly || schema.readOnly) ?? false
 
     let input: HTMLInputElement
 
-    const searchRequest = (match: string) => {
+    const searchRequest = (match_: string) => {
         if (url) {
             if (timerHandle) {
                 clearTimeout(timerHandle)
             }
             const urlWithMatch = new URL(url, location.href)
-            if (match) urlWithMatch.searchParams.append('match', match)
+            if (match_) urlWithMatch.searchParams.append('match', match_)
             timerHandle = setTimeout(
                 () =>
-                    fetch(urlWithMatch.toString(), { credentials: 'include' })
+                    void fetch(urlWithMatch.toString(), { credentials: 'include' })
                         .then((resp) => resp.json())
                         .then((items: string[] | OptionVal[]) => {
                             if (items.length > 0 && !(typeof items[0] === 'object')) {
@@ -90,7 +96,7 @@
                 {#if selected?.image}
                     <img src={selected.image} alt={selected.text} />
                 {/if}
-                {selected?.text || ''}
+                {selected?.text ?? ''}
             {/if}
         </div>
 

@@ -20,42 +20,45 @@
     import { errorMapper } from './errorMapper'
     import {
         type CommonComponentParameters,
+        type Components,
         FileNone,
+        type PathChangedValue,
         type SchemaFormEvent,
         type ValidationErrors,
     } from './types/CommonComponentParameters'
+    import type { JSONSchema } from './types/schema'
     import { incr, nullOptionalsAllowed } from './utilities.js'
     import { lengthGreaterThan } from '@detachhead/ts-helpers/dist/functions/Array'
     import { subtract } from '@detachhead/ts-helpers/dist/functions/Number'
-    import { validator } from '@exodus/schemasafe'
+    import { type Json, validator } from '@exodus/schemasafe'
     import get from 'lodash-es/get'
     import set from 'lodash-es/set'
     import { createEventDispatcher, onMount } from 'svelte'
 
-    export let schema: any
-    export let value: any
+    export let schema: JSONSchema
+    export let value: Json
     export let uploadFiles: Record<string, FileList> = {}
     export let dirty: boolean = false
     export let showErrors: boolean = true
     export let collapsible: boolean = false
-    export let components: Record<string, new (...args: any[]) => any> = {}
+    export let components: Components = {}
     export let componentContext: Record<string, unknown> = {}
 
     const dispatch = createEventDispatcher<{
-        value:  SchemaFormEvent
+        value: SchemaFormEvent
     }>()
 
     export let validationErrors = {} as ValidationErrors
 
-    const revalidate = (newValue?: any) => {
+    const revalidate = (newValue?: Json) => {
         const validate = validator(nullOptionalsAllowed(schema), {
             includeErrors: true,
             allErrors: true,
             allowUnusedKeywords: true,
         })
-        const validatorResult = validate(newValue || value)
+        validate(newValue ?? value)
         validationErrors = Object.fromEntries(
-            (validate.errors || []).map((ve) =>
+            (validate.errors ?? []).map((ve) =>
                 errorMapper(schema, value, ve.keywordLocation, ve.instanceLocation),
             ),
         )
@@ -108,15 +111,17 @@
         pathChanged,
         validationErrors,
         containerParent: 'none',
-        containerReadOnly: schema.readOnly || false,
+        containerReadOnly: 'readonly' in schema && (schema['readOnly'] ?? false),
         showErrors,
         collapsible,
         idx: incr(),
-    } as CommonComponentParameters
+    }
 
-    const pathChanged = (path: string[], val: any, op?: string) => {
-        const changed = false
-
+    const pathChanged = (
+        path: string[],
+        val: PathChangedValue,
+        op?: string,
+    ): PathChangedValue | boolean => {
         if (val instanceof FileList) {
             uploadFiles[path.join('.')] = val
             dirty = true
@@ -127,18 +132,22 @@
             return val
         }
 
-        const curr = path.length === 0 ? params.value : get(params.value, path)
+        const curr = path.length === 0 ? params.value : (get(params.value, path) as unknown)
         if (val === curr) return
 
         if (val === undefined && lengthGreaterThan(path, 0)) {
             const pathFront = path.slice(0, -1)
-            const parent = pathFront.length ? get(params.value, path.slice(0, -1)) : params.value
+            const parent = pathFront.length
+                ? (get(params.value, path.slice(0, -1)) as unknown)
+                : params.value
+            // @ts-expect-error TODO: figure out what this is doing
             delete parent[path[subtract(path.length, 1)]]
         } else {
             if (path.length === 0) {
-                params.value = val
+                // TODO: i think these conditions can be rewritten so this narrows properly
+                params.value = val as Json
             } else {
-                set(params.value, path, val)
+                set(params.value as object, path, val)
             }
         }
 
@@ -159,7 +168,7 @@
         console.log(
             `dispatch value path: ${path.join('.')} val: ${JSON.stringify(
                 val,
-            )}, errors: ${JSON.stringify(validationErrors)}, succeeded: ${succeeded}`,
+            )}, errors: ${JSON.stringify(validationErrors)}, succeeded: ${succeeded.toString()}`,
         )
 
         // update if value event not cancelled.

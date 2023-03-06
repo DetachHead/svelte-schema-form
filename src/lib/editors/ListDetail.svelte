@@ -2,43 +2,66 @@
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import { arrayAdd, arrayDelete, arrayDown, arrayDuplicate, arrayUp } from '../arrayOps'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
-    import { emptyValue, schemaLabel } from '../types/schema'
+    import { type JSONSchema, schemaLabel } from '../types/schema'
     import { stringToHtml } from '../utilities.js'
-    import { values } from 'lodash-es'
+    import type { Json } from '@exodus/schemasafe'
     import { tick } from 'svelte'
     import { throwIfUndefined } from 'throw-expression'
 
+    /**
+     * Setting `editor="list-detail"` on a `type="array"` subschema whose items are `type="object"` shows the
+     * list of objects in a listing grid which when a row is selected, switches to the normal editor for the
+     * object selected. It also provides heading-click view ordering (without mutating the order of the underlying
+     * data list). It responds to the `emptyDisplay` and controls custom properties defined for an array.
+     */
+    type ListDetailJSONSchema = JSONSchema & {
+        type: 'array'
+        items?: JSONSchema & {
+            /** an array of property names which are included as columns in the list. Defaults to all columns. */
+            headings?: string[]
+
+            /**
+             * an object with properties `field` which specifies the default heading field to sort on, and `direction`
+             * which can be `"asc"` or `"desc"` to specify the direction of the default sort.
+             */
+            defaultSort?: {
+                field: string
+                direction: 'asc' | 'desc'
+            }
+        }
+    }
+
     export let params: CommonComponentParameters
-    export let schema: any
-    export let value: any[]
+    export let schema: ListDetailJSONSchema
+    export let value: Json[]
 
     interface SortSpec {
         field: string
         direction: 'asc' | 'desc'
     }
 
-    $: value = value || []
-    $: itemSchema = schema.items || {}
-    $: listProps = ((Array.isArray(itemSchema.headings) &&
-        typeof itemSchema.headings[0] === 'string' &&
-        itemSchema.headings) ||
-        Object.keys(itemSchema.properties)) as string[]
+    $: itemSchema = schema.items ?? {}
+    $: listProps = itemSchema.headings ?? Object.keys(throwIfUndefined(itemSchema.properties))
     $: listFields = listProps.map((prop) =>
-        schemaLabel(itemSchema.properties[prop] as object, [...params.path, '0', prop]),
+        schemaLabel(throwIfUndefined(itemSchema.properties)[prop] as object, [
+            ...params.path,
+            '0',
+            prop,
+        ]),
     )
-    $: sort = itemSchema.defaultSort || (null as SortSpec | null)
+    $: sort = itemSchema.defaultSort ?? (null as SortSpec | null)
 
     let collapserOpenState: 'open' | 'closed' =
         params.path.length === 0 || !params.collapsible ? 'open' : 'closed'
     let selectedIdx = -1
     let mode: 'list' | 'detail' = 'list'
-    let rowView: any[] = []
+    let rowView: Json[] = []
     let toListButton: HTMLButtonElement | null
     let ignoreKeyUp = false
-    let selectedValue: any = null
+    let selectedValue: Json = null
 
     // check schema
-    if (schema.type !== 'array' || schema.items.type !== 'object') {
+    if (schema.type !== 'array' || schema.items?.type !== 'object') {
         throw new Error('ListDetail editor can only be used on an array with items of type=object')
     }
 
@@ -49,7 +72,7 @@
     const onSelect = (idx: number) => async () => {
         mode = 'detail'
         selectedIdx = value.findIndex((v) => v === rowView[idx])
-        selectedValue = value[selectedIdx]
+        selectedValue = throwIfUndefined(value[selectedIdx])
         await tick()
         toListButton?.focus()
     }
@@ -79,7 +102,6 @@
 
     const onKey = async (ev: KeyboardEvent) => {
         if (mode === 'list' && !ignoreKeyUp) {
-            const targ = ev.target as HTMLDivElement
             console.log(`key ${ev.key} selectedIdx ${selectedIdx} len ${value.length}`)
             if (ev.key === 'ArrowDown' && selectedIdx + 1 < value.length) {
                 selectedIdx += 1
@@ -87,7 +109,7 @@
             } else if (ev.key === 'ArrowUp' && selectedIdx > 0) {
                 selectedIdx -= 1
             } else if (ev.key === 'Enter') {
-                onSelect(selectedIdx)()
+                void onSelect(selectedIdx)()
             }
         }
         ignoreKeyUp = false
@@ -106,24 +128,28 @@
         selectedIdx = rowView.findIndex((v) => v === selectedValue)
     }
 
-    const sortFunc = (sort: SortSpec) => (a: any, b: any) => {
-        if (a[sort.field] < b[sort.field]) return sort.direction === 'asc' ? -1 : 1
-        if (a[sort.field] > b[sort.field]) return sort.direction === 'desc' ? -1 : 1
+    const sortFunc = (sortSpec: SortSpec) => (a: Json, b: Json) => {
+        // @ts-expect-error TODO
+        if (a[sortSpec.field] < b[sortSpec.field]) {
+            return sortSpec.direction === 'asc' ? -1 : 1
+        }
+        // @ts-expect-error TODO
+        if (a[sortSpec.field] > b[sortSpec.field]) {
+            return sortSpec.direction === 'desc' ? -1 : 1
+        }
         return 0
     }
 
-    const headingClass = (idx: number, sort: SortSpec | null) => {
-        const sortClass = listProps[idx] !== sort?.field ? '' : sort?.direction
-        return 'heading ' + sortClass
+    const headingClass = (idx: number, sortSpec: SortSpec | null) => {
+        const sortClass = listProps[idx] !== sortSpec?.field ? '' : sortSpec?.direction
+        return 'heading ' + (sortClass ?? '')
     }
 
     $: legendText = schemaLabel(schema, params.path)
-    $: showWrapper = (value && value.length > 0) || schema.emptyDisplay !== false
+    $: showWrapper = value.length > 0 || schema.emptyDisplay !== false
     $: emptyText =
-        (!value || value.length === 0) &&
-        typeof schema.emptyDisplay === 'string' &&
-        schema.emptyDisplay
-    $: readOnly = params.containerReadOnly || schema.readOnly || false
+        value.length === 0 && typeof schema.emptyDisplay === 'string' && schema.emptyDisplay
+    $: readOnly = (params.containerReadOnly || schema.readOnly) ?? false
     $: controls =
         schema.controls === undefined
             ? readOnly
@@ -151,12 +177,14 @@
                     svelte-ignore a11y-click-events-have-key-events -->
                     <span class="collapser {collapserOpenState}" on:click={toggle} />
                 {/if}
-                <span class="subset-label-title object-label-title"
-                    >{@html stringToHtml(legendText)}</span
+                <span class="subset-label-title object-label-title">
+                    <!-- eslint-disable-next-line svelte/no-at-html-tags -- this has been independently verified for safety 🚀 -->
+                    {@html stringToHtml(legendText)}</span
                 >
                 {#if schema.description}
-                    <span class="subset-label-description object-label-description"
-                        >{@html stringToHtml(schema.description)}</span
+                    <span class="subset-label-description object-label-description">
+                        <!-- eslint-disable-next-line svelte/no-at-html-tags -- this has been independently verified for safety 🚀 -->
+                        {@html stringToHtml(schema.description)}</span
                     >
                 {/if}
             </legend>
@@ -165,7 +193,6 @@
         {#if collapserOpenState === 'open'}
             {#if !emptyText}
                 <!-- TODO: a11y stuff -->
-                <!-- eslint-disable-next-line svelte/no-unused-svelte-ignore -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/386 -->
                 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                 <div
                     class="table-container"
@@ -179,7 +206,9 @@
                             <div
                                 class={headingClass(idx, sort)}
                                 on:click|stopPropagation={onSort(throwIfUndefined(listProps[idx]))}
-                                on:keyup|stopPropagation={onSortKey(throwIfUndefined(listProps[idx]))}
+                                on:keyup|stopPropagation={onSortKey(
+                                    throwIfUndefined(listProps[idx]),
+                                )}
                                 tabIndex="0"
                             >
                                 {fieldName}
@@ -198,7 +227,13 @@
                             >
                                 {#each listProps as propName}
                                     <div class="item">
-                                        {item[propName] === undefined ? '\u00A0' : item[propName]}
+                                        {typeof item === 'object' &&
+                                        item !== null &&
+                                        propName in item &&
+                                        !Array.isArray(item) &&
+                                        item[propName] !== undefined
+                                            ? item[propName]
+                                            : '\u00A0'}
                                     </div>
                                 {/each}
                             </div>
@@ -244,7 +279,7 @@
                                                 on:keyup|stopPropagation
                                             />
                                         {/if}
-                                        {#if controls.includes('reorder') && sort === null && idx < (value || []).length - 1}
+                                        {#if controls.includes('reorder') && sort === null && idx < value.length - 1}
                                             <button
                                                 type="button"
                                                 class="list-control down"
@@ -275,10 +310,10 @@
                                     path: [...params.path, selectedIdx.toString()],
                                     containerParent: 'array',
                                     containerReadOnly:
-                                        params.containerReadOnly || schema.readOnly || false,
+                                        (params.containerReadOnly || schema.readOnly) ?? false,
                                 }}
                                 value={selectedValue}
-                                bind:schema={schema.items}
+                                bind:schema={itemSchema}
                             />
                         </div>
                     {/if}
