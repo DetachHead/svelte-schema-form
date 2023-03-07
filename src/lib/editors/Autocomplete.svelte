@@ -38,6 +38,7 @@
             }
             const urlWithMatch = new URL(url, location.href)
             if (match_) urlWithMatch.searchParams.append('match', match_)
+            // @ts-expect-error https://github.com/sveltejs/kit/issues/9348
             timerHandle = setTimeout(
                 () =>
                     void fetch(urlWithMatch.toString(), { credentials: 'include' })
