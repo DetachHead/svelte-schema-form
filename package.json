@@ -21,7 +21,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && svelte-package && sass package/css:package/css",
-		"preview": "vite preview",
+		"preview": "vite build && vite preview",
 		"package": "svelte-kit sync && svelte-package && sass package/css:package/css",
 		"prepublishOnly": "echo 'Did you mean to publish `./package/`, instead of `./`?' && exit 1",
 		"test": "tsc -p tests/tsconfig.json && playwright test",
