@@ -38,8 +38,14 @@ export const arrayUp = (idx: number, params: CommonComponentParameters, value: J
             params.path,
             [
                 ...value.slice(0, idx - 1),
-                throwIfUndefined(value[idx]),
-                throwIfUndefined(value[idx - 1]),
+                throwIfUndefined(
+                    value[idx],
+                    `arrayOpts - arrayUp failed because there was no value at idx=${idx}`,
+                ),
+                throwIfUndefined(
+                    value[idx - 1],
+                    `arrayOpts - arrayUp failed because there was no value at idx=${idx}-1`,
+                ),
                 ...value.slice(idx + 1),
             ],
             'up',
@@ -53,8 +59,14 @@ export const arrayDown = (idx: number, params: CommonComponentParameters, value:
             params.path,
             [
                 ...value.slice(0, idx),
-                throwIfUndefined(value[idx + 1]),
-                throwIfUndefined(value[idx]),
+                throwIfUndefined(
+                    value[idx + 1],
+                    `arrayOpts - arrayDown failed because there was no value at idx=${idx}+1`,
+                ),
+                throwIfUndefined(
+                    value[idx],
+                    `arrayOpts - arrayDown failed because there was no value at idx=${idx}`,
+                ),
                 ...value.slice(idx + 2),
             ],
             'down',

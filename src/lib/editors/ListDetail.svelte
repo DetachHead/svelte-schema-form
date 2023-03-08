@@ -41,13 +41,13 @@
     }
 
     $: itemSchema = schema.items ?? {}
-    $: listProps = itemSchema.headings ?? Object.keys(throwIfUndefined(itemSchema.properties))
+    $: properties = throwIfUndefined(
+        itemSchema.properties,
+        'ListDetail - itemSchema.properties is undefined',
+    )
+    $: listProps = itemSchema.headings ?? Object.keys(properties)
     $: listFields = listProps.map((prop) =>
-        schemaLabel(throwIfUndefined(itemSchema.properties)[prop] as object, [
-            ...params.path,
-            '0',
-            prop,
-        ]),
+        schemaLabel(properties[prop] as object, [...params.path, '0', prop]),
     )
     $: sort = itemSchema.defaultSort ?? (null as SortSpec | null)
 
@@ -72,7 +72,10 @@
     const onSelect = (idx: number) => async () => {
         mode = 'detail'
         selectedIdx = value.findIndex((v) => v === rowView[idx])
-        selectedValue = throwIfUndefined(value[selectedIdx])
+        selectedValue = throwIfUndefined(
+            value[selectedIdx],
+            `ListDetail - no value at selectedIdx=${selectedIdx}`,
+        )
         await tick()
         toListButton?.focus()
     }
@@ -145,6 +148,9 @@
         return 'heading ' + (sortClass ?? '')
     }
 
+    const getListProp = (idx: number) =>
+        throwIfUndefined(listProps[idx], `ListDetail - no listProp at idx=${idx}`)
+
     $: legendText = schemaLabel(schema, params.path)
     $: showWrapper = value.length > 0 || schema.emptyDisplay !== false
     $: emptyText =
@@ -205,10 +211,8 @@
                         {#each listFields as fieldName, idx}
                             <div
                                 class={headingClass(idx, sort)}
-                                on:click|stopPropagation={onSort(throwIfUndefined(listProps[idx]))}
-                                on:keyup|stopPropagation={onSortKey(
-                                    throwIfUndefined(listProps[idx]),
-                                )}
+                                on:click|stopPropagation={onSort(getListProp(idx))}
+                                on:keyup|stopPropagation={onSortKey(getListProp(idx))}
                                 tabIndex="0"
                             >
                                 {fieldName}

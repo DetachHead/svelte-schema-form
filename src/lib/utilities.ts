@@ -29,7 +29,7 @@ export const camelToWords = (camel: string): string => {
     const words: string[] = []
     let start = 0
     for (let end = 1; end < camel.length; end++) {
-        const value = throwIfUndefined(camel[end])
+        const value = throwIfUndefined(camel[end], 'utilities - camelToWords iteration fail moment')
         if ('A' <= value && value <= 'Z') {
             words.push(camel.substring(start, end).toLowerCase())
             start = end

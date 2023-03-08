@@ -8,7 +8,7 @@
     export let schema: JSONSchema
     export let value: Json
     let enumText: string[]
-    $: enumVals = throwIfUndefined(schema.enum)
+    $: enumVals = throwIfUndefined(schema.enum, 'Enum - schema.enum was undefiend')
     // TODO: fix types
     $: enumText = (schema.enumText ?? schema.enum ?? []) as string[]
 </script>

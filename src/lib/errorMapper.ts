@@ -34,7 +34,10 @@ export const errorMapper = (
             } as Record<string, string>
             return [
                 location,
-                `Please enter a properly formatted ${throwIfUndefined(valMap[keyValue])}`,
+                `Please enter a properly formatted ${throwIfUndefined(
+                    valMap[keyValue],
+                    `errorMapper - failed to find '${keyValue}' in valMap`,
+                )}`,
             ]
         }
     }

@@ -52,7 +52,7 @@ export const editorForSchema = (schema: JSONSchema): string => {
         case 'string-email':
         case 'string-password':
         case 'number-currency':
-            return throwIfUndefined(schema['format'])
+            return throwIfUndefined(schema['format'], `schema - no format for ${type}`)
         default:
             return type
     }

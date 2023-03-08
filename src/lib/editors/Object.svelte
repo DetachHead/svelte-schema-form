@@ -4,7 +4,6 @@
     import { type JSONSchema, schemaLabel } from '../types/schema'
     import { stringToHtml } from '../utilities.js'
     import type { Json } from '@exodus/schemasafe'
-    import { throwIfUndefined } from 'throw-expression'
 
     export let params: CommonComponentParameters
     export let schema: (JSONSchema & { required?: string[] }) & { properties: JSONSchema }
@@ -58,7 +57,7 @@
                     containerParent: 'object',
                     containerReadOnly: (params.containerReadOnly || schema.readOnly) ?? false,
                 }}
-                value={throwIfUndefined(value[propName])}
+                value={value[propName]}
                 bind:schema={schema.properties[propName]}
             />
         {/each}

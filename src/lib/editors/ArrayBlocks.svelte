@@ -4,7 +4,7 @@
     import { type JSONSchema, emptyValue } from '../types/schema'
     import { pathCombine } from '../utilities.js'
     import type { Json } from '@exodus/schemasafe'
-    import _ from 'lodash-es'
+    import _, { last } from 'lodash-es'
     import { throwIfNull, throwIfUndefined } from 'throw-expression'
 
     export let params: CommonComponentParameters
@@ -73,7 +73,10 @@
         dataTransfer.dropEffect = 'move'
         const start = parseInt(dataTransfer.getData('text/plain'))
 
-        const startValue = throwIfUndefined(actualValue[start])
+        const startValue = throwIfUndefined(
+            actualValue[start],
+            `ArrayBlocks - onDrop failed to get startValue. start=${start}`,
+        )
         if (start < i) {
             params.pathChanged(params.path, [
                 ...actualValue.slice(0, start),
@@ -94,8 +97,8 @@
     }
 
     let currentUrl = schema.effectiveUrl ?? location.href
-    if (currentUrl.includes('#')) currentUrl = throwIfUndefined(currentUrl.split('#')[0])
-    if (currentUrl.includes('?')) currentUrl = throwIfUndefined(currentUrl.split('?')[0])
+    currentUrl = throwIfUndefined(currentUrl.split('#')[0], 'ArrayBlocks - split fail moment (#)')
+    currentUrl = throwIfUndefined(currentUrl.split('?')[0], 'ArrayBlocks - split fail moment (?)')
 
     // TODO: figure out if _idx is needed, its unused but could effect when the function gets rerun
     const getUrl = (item: Json, _idx: number) => {
@@ -139,9 +142,12 @@
     let addItemSchema: JSONSchema
     $: {
         const nonArrayProperties = Object.fromEntries(
-            Object.entries(throwIfUndefined(schema.items.properties)).filter(
-                ([_propName, subschema]) => (subschema as { type: string }).type !== 'array',
-            ),
+            Object.entries(
+                throwIfUndefined(
+                    schema.items.properties,
+                    'ArrayBlocks - no properties in schema.items',
+                ),
+            ).filter(([_propName, subschema]) => (subschema as { type: string }).type !== 'array'),
         )
         addItemSchema = {
             ...(schema.items as JSONSchema),
@@ -209,7 +215,7 @@
                 path: [...params.path, (actualValue.length - 1).toString()],
                 containerParent: 'array',
             }}
-            value={throwIfUndefined(actualValue[actualValue.length - 1])}
+            value={throwIfUndefined(last(actualValue), 'ArrayBlocks - actuanValue was empty')}
             bind:schema={addItemSchema}
         />
         <button type="button" class="submit-button new-item-submit" on:click={onAddUpdate}
