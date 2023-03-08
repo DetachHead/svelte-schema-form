@@ -8,7 +8,7 @@
 
     export let params: CommonComponentParameters
     export let schema: JSONSchema & { items: JSONSchema }
-    export let value: Json[]
+    export let value: Json[] = []
 
     let collapserOpenState: 'open' | 'closed' =
         params.path.length === 0 || !params.collapsible ? 'open' : 'closed'

@@ -7,7 +7,7 @@
 
     export let params: CommonComponentParameters
     export let schema: (JSONSchema & { required?: string[] }) & { properties: JSONSchema }
-    export let value: { [id: string]: Json }
+    export let value: { [id: string]: Json } = {}
 
     let propNames: string[]
     $: propNames = Object.keys(schema.properties)

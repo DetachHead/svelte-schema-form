@@ -6,7 +6,7 @@
 
     export let params: CommonComponentParameters
     export let schema: JSONSchema
-    export let value: Json
+    export let value: Json | undefined
 
     const { components } = params
 

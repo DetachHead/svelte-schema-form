@@ -33,7 +33,7 @@
 
     export let params: CommonComponentParameters
     export let schema: ListDetailJSONSchema
-    export let value: Json[]
+    export let value: Json[] = []
 
     interface SortSpec {
         field: string
