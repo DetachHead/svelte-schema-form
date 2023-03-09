@@ -20,11 +20,11 @@ jobs:
               run: npm ci --force
 
             - run: npm run check
-            - run: npm run package
+            - run: npm run build
             - uses: actions/upload-artifact@v2
               with:
                   name: build
-                  path: package
+                  path: dist
     publish:
         name: publish
         runs-on: ubuntu-latest
@@ -40,15 +40,15 @@ jobs:
               # need to publish if the branch isn't master, or it is master and the version in package.json hasn't been published yet
               with:
                   name: build
-                  path: package
+                  path: dist
 
             # publish canary version on every push to every branch except master
             - name: canary version
-              run: cd package && npm version ${{ steps.current-version.outputs.CURRENT_VERSION }}-$GITHUB_SHA --git-tag-version false
+              run: cd dist && npm version ${{ steps.current-version.outputs.CURRENT_VERSION }}-$GITHUB_SHA --git-tag-version false
             - name: canary publish
               uses: JS-DevTools/npm-publish@v1
               with:
                   token: ${{ secrets.NPM_TOKEN }}
-                  package: ./package/package.json
+                  package: ./dist/package.json
                   access: public
                   tag: canary
