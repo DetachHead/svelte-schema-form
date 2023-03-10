@@ -18,12 +18,8 @@
 		"url": "https://github.com/detachhead/svelte-schema-form/issues"
 	},
 	"homepage": "https://github.com/detachhead/svelte-schema-form#readme",
-	"exports": {
-		".": {
-		  "types": "./dist/index.d.ts",
-		  "svelte": "./dist/index.js"
-		}
-	},
+	"types": "./dist/index.d.ts",
+	"svelte": "./dist/index.js",
 	"files": ["dist"],
 	"scripts": {
 		"dev": "vite dev",
