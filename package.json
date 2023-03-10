@@ -18,11 +18,16 @@
 		"url": "https://github.com/detachhead/svelte-schema-form/issues"
 	},
 	"homepage": "https://github.com/detachhead/svelte-schema-form#readme",
+	"exports": {
+		".": {
+		  "types": "./dist/index.d.ts",
+		  "svelte": "./dist/index.js"
+		}
+	  },
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && svelte-package && merge-dirs src/dist/__package_types_tmp__ dist && rimraf src/dist && sass dist/css:dist/css",
 		"preview": "vite build && vite preview",
-		"prepublishOnly": "echo 'Did you mean to publish `./dist/`, instead of `./`?' && exit 1",
 		"test": "tsc -p tests/tsconfig.json && playwright test",
 		"typecheck": "tsc && npm run typecheck:svelte",
 		"typecheck:svelte": "svelte-kit sync && svelte-check --fail-on-warnings --fail-on-hints --tsconfig ./src/tsconfig.json",
