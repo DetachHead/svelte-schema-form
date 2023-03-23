@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import { arrayAdd, arrayDelete, arrayDown, arrayDuplicate, arrayUp } from '../arrayOps'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
@@ -72,33 +72,33 @@
                     <div class="list-controls">
                         {#if controls.includes('delete')}
                             <button
-                                type="button"
                                 class="list-control delete"
                                 title="delete"
+                                type="button"
                                 on:click={arrayDelete(idx, params, value)}
                             />
                         {/if}
                         {#if controls.includes('duplicate')}
                             <button
-                                type="button"
                                 class="list-control duplicate"
                                 title="duplicate"
+                                type="button"
                                 on:click={arrayDuplicate(idx, params, value)}
                             />
                         {/if}
                         {#if controls.includes('reorder') && idx > 0}
                             <button
-                                type="button"
                                 class="list-control up"
                                 title="move up"
+                                type="button"
                                 on:click={arrayUp(idx, params, value)}
                             />
                         {/if}
                         {#if controls.includes('reorder') && idx < value.length - 1}
                             <button
-                                type="button"
                                 class="list-control down"
                                 title="move down"
+                                type="button"
                                 on:click={arrayDown(idx, params, value)}
                             />
                         {/if}
@@ -109,9 +109,9 @@
             {/if}
             {#if controls.includes('add')}
                 <button
-                    type="button"
                     class="list-control add"
                     title="add item"
+                    type="button"
                     on:click={arrayAdd(schema, params, value)}
                 />
             {/if}

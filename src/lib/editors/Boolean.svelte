@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { JSONSchema } from '$lib/types/schema'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
 
@@ -12,9 +12,9 @@
     <input
         id={params.path.join('.')}
         name={params.path.join('.')}
-        type="checkbox"
         checked={value || false}
         disabled={schema.readOnly ?? params.containerReadOnly}
+        type="checkbox"
         on:change={(ev) =>
             params.pathChanged(
                 params.path,

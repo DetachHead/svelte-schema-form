@@ -1,6 +1,6 @@
 <svelte:options accessors />
 
-<script lang="ts">
+<script lang="ts" strictEvents>
     import SubSchemaForm from './SubSchemaForm.svelte'
     import Array from './editors/Array.svelte'
     import ArrayBlocks from './editors/ArrayBlocks.svelte'
@@ -59,7 +59,7 @@
         validate(newValue ?? value)
         validationErrors = Object.fromEntries(
             (validate.errors ?? []).map((ve) =>
-                errorMapper(schema, value, ve.keywordLocation, ve.instanceLocation),
+                errorMapper(ve.keywordLocation, ve.instanceLocation),
             ),
         )
     }

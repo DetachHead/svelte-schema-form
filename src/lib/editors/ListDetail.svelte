@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import { arrayAdd, arrayDelete, arrayDown, arrayDuplicate, arrayUp } from '../arrayOps'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
@@ -201,9 +201,9 @@
                 <!-- TODO: a11y stuff -->
                 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
                 <div
+                    style:grid-template-columns={gridTemplateColumns}
                     class="table-container"
                     tabindex="0"
-                    style:grid-template-columns={gridTemplateColumns}
                     on:keyup={onKey}
                     on:click={onClick}
                 >
@@ -211,9 +211,9 @@
                         {#each listFields as fieldName, idx}
                             <div
                                 class={headingClass(idx, sort)}
+                                tabIndex="0"
                                 on:click|stopPropagation={onSort(getListProp(idx))}
                                 on:keyup|stopPropagation={onSortKey(getListProp(idx))}
-                                tabIndex="0"
                             >
                                 {fieldName}
                             </div>
@@ -246,9 +246,9 @@
                                     <div class="row-buttons">
                                         {#if controls.includes('delete')}
                                             <button
-                                                type="button"
                                                 class="list-control delete"
                                                 title="delete"
+                                                type="button"
                                                 on:click|stopPropagation={arrayDelete(
                                                     idx,
                                                     params,
@@ -259,9 +259,9 @@
                                         {/if}
                                         {#if controls.includes('duplicate')}
                                             <button
-                                                type="button"
                                                 class="list-control duplicate"
                                                 title="duplicate"
+                                                type="button"
                                                 on:click|stopPropagation={arrayDuplicate(
                                                     idx,
                                                     params,
@@ -272,9 +272,9 @@
                                         {/if}
                                         {#if controls.includes('reorder') && sort === null && idx > 0}
                                             <button
-                                                type="button"
                                                 class="list-control up"
                                                 title="move up"
+                                                type="button"
                                                 on:click|stopPropagation={arrayUp(
                                                     idx,
                                                     params,
@@ -285,9 +285,9 @@
                                         {/if}
                                         {#if controls.includes('reorder') && sort === null && idx < value.length - 1}
                                             <button
-                                                type="button"
                                                 class="list-control down"
                                                 title="move down"
+                                                type="button"
                                                 on:click|stopPropagation={arrayDown(
                                                     idx,
                                                     params,
@@ -302,10 +302,10 @@
                         {/each}
                     {:else}
                         <button
+                            bind:this={toListButton}
                             class="to-list"
                             type="button"
-                            on:click={onModeList}
-                            bind:this={toListButton}>List</button
+                            on:click={onModeList}>List</button
                         >
                         <div class="element">
                             <SubSchemaForm
@@ -327,9 +327,9 @@
             {/if}
             {#if controls.includes('add')}
                 <button
-                    type="button"
                     class="list-control add"
                     title="add item"
+                    type="button"
                     on:click={arrayAdd(schema, params, value)}
                 />
             {/if}

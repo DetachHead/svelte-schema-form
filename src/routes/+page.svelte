@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import SubmitForm, { type SubmitFormEvent } from '$lib/SubmitForm.svelte'
     import type { JSONSchema } from '$lib/types/schema'
     import 'svelte-schema-form/css/basic-skin.scss'
@@ -84,7 +84,7 @@
 <div class="container">
     <div class="schema" class:jsonInvalid>
         <div class="control">
-            <input type="checkbox" id="collapsible" bind:checked={collapsible} />
+            <input id="collapsible" type="checkbox" bind:checked={collapsible} />
             <label for="collapsible">Collapsible</label>
         </div>
         <textarea id="schema" on:keyup={schemaUpdate}
@@ -93,12 +93,12 @@
     </div>
     <div class="form">
         <SubmitForm
-            {schema}
-            {value}
-            on:submit={submit}
-            uploadBaseUrl="https://restspace.local:3131/files"
             {collapsible}
             {componentContext}
+            {schema}
+            uploadBaseUrl="https://restspace.local:3131/files"
+            {value}
+            on:submit={submit}
         />
     </div>
     <div class="output">

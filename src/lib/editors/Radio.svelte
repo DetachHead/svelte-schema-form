@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { JSONSchema } from '$lib/types/schema'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import type { Json } from '@exodus/schemasafe'
@@ -17,23 +17,23 @@
 <!-- event which calls pathChanged should be after all bindings so 'value' will have been updated -->
 <svelte:component this={params.components['fieldWrapper']} {params} {schema}>
     <div
-        role="radiogroup"
+        id={`group-${id}`}
+        style:flex-direction={flexDirection}
         class="group-container"
         aria-labelledby={`label-${id}`}
-        style="flex-direction:{flexDirection}"
-        id={`group-${id}`}
+        role="radiogroup"
     >
         {#each enumVals as enumVal, idx}
             <input
-                class="sr-only"
-                type="radio"
                 id={`${id}-${idx}`}
+                name={id}
+                class="sr-only"
+                checked={enumVal === value}
+                type="radio"
+                value={enumVal}
                 on:change={(ev) =>
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/390
                     params.pathChanged(params.path, ev.currentTarget.value || undefined)}
-                value={enumVal}
-                name={id}
-                checked={enumVal === value}
             />
             <label for={`${id}-${idx}`}> {enumText[idx]} </label>
         {/each}

@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { JSONSchema } from '$lib/types/schema'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import type { Json } from '@exodus/schemasafe'
@@ -92,10 +92,10 @@
         svelte-ignore a11y-click-events-have-key-events -->
         <div class="sf-selected-item input" on:click={toggleDropDown}>
             {#if inputState === 'searching'}
-                <input type="text" bind:value={match} on:keyup={keyup} bind:this={input} />
+                <input bind:this={input} type="text" bind:value={match} on:keyup={keyup} />
             {:else}
                 {#if selected?.image}
-                    <img src={selected.image} alt={selected.text} />
+                    <img alt={selected.text} src={selected.image} />
                 {/if}
                 {selected?.text ?? ''}
             {/if}
@@ -105,9 +105,9 @@
             {#each options as item (item.id)}
                 <!-- TODO
                 svelte-ignore a11y-click-events-have-key-events -->
-                <div on:click={handleSelect(item)} class:selected={value === item.text}>
+                <div class:selected={value === item.text} on:click={handleSelect(item)}>
                     {#if item.image}
-                        <img src={item.image} alt={item.text} />
+                        <img alt={item.text} src={item.image} />
                     {/if}
                     {item.text}
                 </div>

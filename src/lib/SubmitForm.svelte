@@ -1,13 +1,13 @@
 <svelte:options accessors />
 
-<script lang="ts" context="module">
+<script context="module" lang="ts">
     export interface SubmitFormEvent {
         value: SchemaFormEvent
         submit: { value: Json }
     }
 </script>
 
-<script lang="ts">
+<script lang="ts" strictEvents>
     import SchemaForm from './SchemaForm.svelte'
     import {
         type Components,
@@ -137,24 +137,24 @@
     componentContext['doUploads'] = doUploads
 </script>
 
-<form class="svelte-schema-form" {action} class:dirty>
+<form class="svelte-schema-form" class:dirty {action}>
     <SchemaForm
-        bind:schema
+        {collapsible}
+        {componentContext}
+        {components}
+        {showErrors}
         {value}
+        bind:schema
         on:value={change}
         bind:dirty
         bind:uploadFiles
-        {showErrors}
-        {components}
-        {collapsible}
-        {componentContext}
     />
     <div class="button-container">
         <button
-            type={action ? 'submit' : 'button'}
             class="submit-button"
-            on:click={submit}
-            class:dirty>{submitText}</button
+            class:dirty
+            type={action ? 'submit' : 'button'}
+            on:click={submit}>{submitText}</button
         >
     </div>
 </form>

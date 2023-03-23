@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import { type JSONSchema, editorForSchema } from '../types/schema'
     import type { Json } from '@exodus/schemasafe'
@@ -30,9 +30,9 @@
     <input
         id={params.path.join('.')}
         name={params.path.join('.')}
+        disabled={schema.readOnly ?? params.containerReadOnly}
         {type}
         value={value ?? ''}
-        disabled={schema.readOnly ?? params.containerReadOnly}
         on:input={(ev) =>
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- https://github.com/ota-meshi/eslint-plugin-svelte/issues/390
             params.pathChanged(params.path, ev.currentTarget.value || undefined)}

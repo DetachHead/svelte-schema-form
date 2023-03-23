@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import type { Json } from '@exodus/schemasafe'
 

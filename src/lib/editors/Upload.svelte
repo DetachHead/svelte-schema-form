@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { JSONSchema } from '$lib/types/schema'
     import {
         type CommonComponentParameters,
@@ -37,16 +37,14 @@
     let details = {} as Record<string, Details>
     let mode: 'uploader' | 'link' = 'uploader'
 
-    $: {
-        // run this to remove any local file thumbnails stored in a FileList once upload is done
-        if (
-            value &&
-            (value.startsWith('http') || value.startsWith('/')) &&
-            renderedThumbnails.length > 0
-        ) {
-            renderedThumbnails.forEach((rt) => rt.remove())
-            renderedThumbnails = []
-        }
+    // run this to remove any local file thumbnails stored in a FileList once upload is done
+    $: if (
+        value &&
+        (value.startsWith('http') || value.startsWith('/')) &&
+        renderedThumbnails.length > 0
+    ) {
+        renderedThumbnails.forEach((rt) => rt.remove())
+        renderedThumbnails = []
     }
     $: readOnly = (schema.readOnly ?? params.containerReadOnly) || false
 
@@ -171,14 +169,15 @@
         bind:this={inp}
         id={params.path.join('.')}
         name={params.path.join('.')}
-        type="file"
+        style:display="none"
         readonly={readOnly}
+        type="file"
         on:input={onInput}
-        style="display: none"
     />
     <!-- TODO: a11y stuff -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <div
+        bind:this={dropArea}
         class="sf-drop-area {mode}"
         class:highlight
         tabIndex="0"
@@ -187,24 +186,23 @@
         on:dragleave={dragLeave}
         on:drop={drop}
         on:click={openFile}
-        bind:this={dropArea}
     >
         {#if mode === 'uploader' && !readOnly}
             <div class="sf-upload-caption">Drop files or click to upload</div>
         {/if}
         {#if value && isImage(value) && mode === 'uploader'}
-            <img class="sf-upload-thumb" src={value} alt="upload file" />
+            <img class="sf-upload-thumb" alt="upload file" src={value} />
         {/if}
         {#if value && !isImage(value) && mode === 'uploader'}
             <div class="sf-upload-file" title={value}>{afterLast(value, '.')}</div>
         {/if}
         {#if mode === 'link'}
             <input
-                type="text"
                 id={params.path.join('.')}
                 name={params.path.join('.')}
-                disabled={readOnly}
                 class="sf-upload-input"
+                disabled={readOnly}
+                type="text"
                 value={value ?? ''}
                 on:click|stopPropagation={() => undefined}
                 on:input={(ev) =>
@@ -214,12 +212,12 @@
         {/if}
         <div class="sf-upload-controls">
             {#if !readOnly}
-                <button type="button" class="sf-upload-deleter" on:click={deleteUploads} />
+                <button class="sf-upload-deleter" type="button" on:click={deleteUploads} />
             {/if}
             <button
-                type="button"
                 class:sf-upload-to-link={mode === 'uploader'}
                 class:sf-upload-to-uploader={mode === 'link'}
+                type="button"
                 on:click={changeMode}
             />
         </div>
@@ -228,7 +226,7 @@
         <div class="sf-progress-bars">
             {#each Object.entries(progress) as [name, percent]}
                 <div class="sf-progress-bar">
-                    <div class="sf-progress-done" style="width: {percent}%" />
+                    <div style:width="{percent}%" class="sf-progress-done" />
                     {name}
                 </div>
             {/each}

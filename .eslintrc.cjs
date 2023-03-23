@@ -51,33 +51,29 @@ const config = {
     },
     overrides: [
         {
-            extends: ['plugin:svelte/recommended'],
+            extends: ['plugin:svelte/all', 'plugin:svelte/prettier'],
             files: ['*.svelte'],
             parser: 'svelte-eslint-parser',
             parserOptions: { ...browserParserOptions, parser: '@typescript-eslint/parser' },
             rules: {
                 ...typescriptEslintRecommended,
-                'svelte/no-dom-manipulating': 'error',
-                'svelte/no-export-load-in-svelte-module-in-kit-pages': 'error',
-                'svelte/no-store-async': 'error',
-                'svelte/require-store-callbacks-use-set-param': 'error',
-                'svelte/require-store-reactive-access': 'error',
-                'svelte/valid-prop-names-in-kit-pages': 'error',
-                'svelte/button-has-type': 'error',
-                'svelte/no-reactive-functions': 'error',
-                'svelte/no-reactive-literals': 'error',
-                'svelte/no-useless-mustaches': 'error',
-                'svelte/prefer-destructured-store-props': 'error',
-                'svelte/require-optimized-style-attribute': 'error',
-                'svelte/require-stores-init': 'error',
+                '@typescript-eslint/no-unused-vars': [
+                    'error',
+                    {
+                        args: 'all',
+                        caughtErrors: 'all',
+                        argsIgnorePattern: '^_',
+                        varsIgnorePattern: '^(_|\\$\\$(Slots|Events))',
+                    },
+                ],
                 'svelte/valid-compile': 'off', // umm, we have the compiler for that
-                'svelte/no-at-debug-tags': 'error',
                 'svelte/comment-directive': [
                     'error',
                     {
                         reportUnusedDisableDirectives: true,
                     },
                 ],
+                'svelte/block-lang': ['error', { enforceScriptPresent: true, script: 'ts' }],
             },
         },
         { ...nodeOverrides, files: ['*.js', '*.ts'] },

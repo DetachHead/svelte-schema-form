@@ -1,11 +1,8 @@
-import { type JSONSchema, jsonPointerToPath } from './types/schema'
+import { jsonPointerToPath } from './types/schema'
 import { afterLast } from './utilities.js'
-import type { Json } from '@exodus/schemasafe'
 import { throwIfUndefined } from 'throw-expression'
 
 export const errorMapper = (
-    schema: JSONSchema,
-    value: Json,
     keywordLocation: string,
     instanceLocation: string,
 ): [string, string] => {

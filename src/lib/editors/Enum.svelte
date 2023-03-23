@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { JSONSchema } from '$lib/types/schema'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import type { Json } from '@exodus/schemasafe'
@@ -18,8 +18,8 @@
     <select
         id={params.path.join('.')}
         name={params.path.join('.')}
-        {value}
         disabled={schema.readOnly ?? params.containerReadOnly}
+        {value}
         on:change={(ev) =>
             params.pathChanged(
                 params.path,

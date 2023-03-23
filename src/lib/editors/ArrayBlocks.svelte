@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import { type JSONSchema, emptyValue } from '../types/schema'
@@ -166,17 +166,17 @@
     <ol>
         {#each actualValue as item, idx (item)}
             <li
-                class={getArrayBlockClasses(item)}
                 style:background-image={throwIfNull(item)['thumbnail']
                     ? `url('${String(item['thumbnail'])}')`
                     : ''}
+                class={getArrayBlockClasses(item)}
+                class:drag-over={hovering === idx}
                 draggable={true}
                 on:dragstart={onDragstart(idx)}
                 on:drop|preventDefault={onDrop(idx)}
                 on:dragover|preventDefault={() => false}
                 on:dragenter|preventDefault={() => (hovering = idx)}
                 on:dragleave={() => (hovering = false)}
-                class:drag-over={hovering === idx}
             >
                 <a href={getUrl(item, idx)}>
                     <h2>
@@ -186,10 +186,10 @@
                 <div class="actions">
                     <!-- TODO
                     svelte-ignore a11y-click-events-have-key-events -->
-                    <span class="duplicate" on:click={onDuplicate(idx)} title="Duplicate this" />
+                    <span class="duplicate" title="Duplicate this" on:click={onDuplicate(idx)} />
                     <!-- TODO
                     svelte-ignore a11y-click-events-have-key-events -->
-                    <span class="delete" on:click={onDelete(idx)} title="Delete this" />
+                    <span class="delete" title="Delete this" on:click={onDelete(idx)} />
                 </div>
             </li>
         {/each}
@@ -199,12 +199,12 @@
             svelte-ignore a11y-click-events-have-key-events -->
             <li
                 class="array-block add"
+                class:drag-over={hovering === lastIdx}
                 on:click={onAdd}
                 on:drop|preventDefault={onDrop(lastIdx)}
                 on:dragover|preventDefault={() => false}
                 on:dragenter|preventDefault={() => (hovering = lastIdx)}
                 on:dragleave={() => (hovering = false)}
-                class:drag-over={hovering === lastIdx}
             />
         {/if}
     </ol>
@@ -218,7 +218,7 @@
             value={throwIfUndefined(last(actualValue), 'ArrayBlocks - actuanValue was empty')}
             bind:schema={addItemSchema}
         />
-        <button type="button" class="submit-button new-item-submit" on:click={onAddUpdate}
+        <button class="submit-button new-item-submit" type="button" on:click={onAddUpdate}
             >Add</button
         >
     {/if}

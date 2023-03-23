@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import SubSchemaForm from '../SubSchemaForm.svelte'
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import { type JSONSchema, schemaLabel } from '../types/schema'

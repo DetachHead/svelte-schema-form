@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { CommonComponentParameters } from '../types/CommonComponentParameters'
     import type { JSONSchema } from '../types/schema'
 
@@ -48,9 +48,9 @@
         id={params.path.join('.')}
         name={params.path.join('.')}
         class="currency"
+        disabled={schema.readOnly ?? params.containerReadOnly}
         {type}
         value={formattedString}
-        disabled={schema.readOnly ?? params.containerReadOnly}
         on:input={onInput}
     />
 </svelte:component>

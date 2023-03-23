@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" strictEvents>
     import type { CommonComponentParameters } from './types/CommonComponentParameters'
     import { type JSONSchema, editorForSchema } from './types/schema'
     import type { Json } from '@exodus/schemasafe'
@@ -19,7 +19,7 @@
     <svelte:component
         this={getComponent(result.resolved)}
         {params}
-        {value}
         schema={result.resolved}
+        {value}
     />
 {/await}
