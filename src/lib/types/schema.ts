@@ -7,13 +7,13 @@ export type Control = 'delete' | 'duplicate' | 'reorder' | 'add'
 
 export type JSONSchema = (JSONSchema4 | JSONSchema6 | JSONSchema7) & {
     // TODO: what are these props? they arent documented
-    pathPattern?: string
-    itemPathPattern?: string
-    effectiveUrl?: string
-    thumbnail?: string
-    direction?: string
-    editor?: string
-    hidden?: boolean
+    pathPattern?: string | undefined
+    itemPathPattern?: string | undefined
+    effectiveUrl?: string | undefined
+    thumbnail?: string | undefined
+    direction?: string | undefined
+    editor?: string | undefined
+    hidden?: boolean | undefined
 
     /**
      * Custom property which determines how the array displays if it has no items. `false` means don't show a header or wrapper.
@@ -25,18 +25,18 @@ export type JSONSchema = (JSONSchema4 | JSONSchema6 | JSONSchema7) & {
      * This property if present and set to `true` will disable the editor for this field, only using it for display.
      * All children of this field will also be read only
      */
-    readOnly?: boolean
+    readOnly?: boolean | undefined
 
     /**
      * Custom property which is a comma separated list of controls including `delete,` `duplicate`, `reorder`, `add`.
      * Default is all these. A readOnly array has no controls.
      */
-    controls?: Control[]
+    controls?: Control[] | undefined
 
     /**
      * Custom property to supply display labels for the Select element as an array of strings, one for each enum value
      */
-    enumText?: string[]
+    enumText?: string[] | undefined
 }
 
 export const editorForSchema = (schema: JSONSchema): string => {
