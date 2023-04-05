@@ -31,6 +31,7 @@
     import { lengthGreaterThan } from '@detachhead/ts-helpers/dist/functions/Array'
     import { subtract } from '@detachhead/ts-helpers/dist/functions/Number'
     import { type Json, validator } from '@exodus/schemasafe'
+    import { cloneDeep } from 'lodash-es'
     import get from 'lodash-es/get'
     import set from 'lodash-es/set'
     import { createEventDispatcher, onMount } from 'svelte'
@@ -147,7 +148,7 @@
                 // TODO: i think these conditions can be rewritten so this narrows properly
                 params.value = val as Json
             } else {
-                set(params.value as object, path, val)
+                params.value = set<Json>(cloneDeep(params.value) as object, path, val)
             }
         }
 
